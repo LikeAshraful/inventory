@@ -255,9 +255,9 @@ class InvoiceController extends Controller {
         DB::beginTransaction();
 
         try {
-            $invoice     = Invoice::findOrFail($invoiceId);
-            $originalDue = $invoice->due_amount;
-            $customer    = $invoice->customer;
+            $invoice          = Invoice::findOrFail($invoiceId);
+            $originalCustomer = $invoice->customer;
+            $originalDue      = $invoice->due_amount;
 
             $request->validate([
                 'product_id'   => 'required|array',
@@ -270,12 +270,43 @@ class InvoiceController extends Controller {
                 'customer_id'  => 'required|integer|min:0',
             ]);
 
-            $newDue = $request->due_amount;
-            $delta  = $newDue - $originalDue;
-            $customer->previous_due_amount += $delta;
-            $customer->save();
+            $newCustomer   = null;
+            $isNewCustomer = $request->customer_id == 0;
 
-            // Revert product stock from original details
+            if ($isNewCustomer) {
+                // Create new customer
+                $newCustomer = Customer::create([
+                    'shopname'            => $request->shopname,
+                    'name'                => $request->name,
+                    'mobile_no'           => $request->mobile_no,
+                    'previous_due_amount' => $request->due_amount, // Initial due from this invoice
+                ]);
+            } else {
+                // Fetch existing customer
+                $newCustomer = Customer::find($request->customer_id);
+
+                if (!$newCustomer) {
+                    throw new \Exception("Customer not found.");
+                }
+
+            }
+
+            if ($originalCustomer->id != $newCustomer->id) {
+                // Deduct original due from old customer
+                $originalCustomer->previous_due_amount -= $originalDue;
+                $originalCustomer->save();
+
+                if (!$isNewCustomer) {
+                    $newCustomer->previous_due_amount += $request->due_amount;
+                    $newCustomer->save();
+                }
+
+            } else {
+                $delta = $request->due_amount - $originalDue;
+                $newCustomer->previous_due_amount += $delta;
+                $newCustomer->save();
+            }
+
             $originalDetails = InvoiceDetail::where('invoice_id', $invoice->id)->get();
 
             foreach ($originalDetails as $detail) {
@@ -293,16 +324,15 @@ class InvoiceController extends Controller {
 
             }
 
-            // Delete old records
             InvoiceDetail::where('invoice_id', $invoice->id)->delete();
             SaleReturn::where('invoice_id', $invoice->id)->delete();
 
-            // Update the invoice
             $invoice->update([
                 'invoice_no'          => $request->invoice_no,
                 'date'                => $request->date,
                 'comment'             => $request->comment,
                 'employee_id'         => $request->employee_id,
+                'customer_id'         => $isNewCustomer ? $newCustomer->id : $request->customer_id,
                 'total_amount'        => $request->total_amount,
                 'percentage_discount' => $request->percentage_discount,
                 'flat_discount'       => $request->flat_discount,
@@ -310,8 +340,8 @@ class InvoiceController extends Controller {
                 'labour'              => $request->labour,
                 'payable_amount'      => $request->payable_amount,
                 'status'              => $request->status,
-                'due_amount'          => $newDue,
-                // Include other fields as necessary
+                'due_amount'          => $request->due_amount,
+                'previous_due_amount' => $newCustomer->previous_due_amount,
             ]);
 
             foreach ($request->product_id as $key => $productId) {
@@ -321,8 +351,8 @@ class InvoiceController extends Controller {
                 InvoiceDetail::create([
                     'invoice_id'   => $invoice->id,
                     'product_id'   => $productId,
-                    'product_code' => $request->product_code[$key] ?? '',
-                    'product_name' => $request->product_name[$key] ?? 'Unknown Product',
+                    'product_code' => $request->product_code[$key],
+                    'product_name' => $request->product_name[$key],
                     'type'         => $type,
                     'quantity'     => $quantity,
                     'price'        => $request->price[$key],
@@ -331,7 +361,9 @@ class InvoiceController extends Controller {
 
                 if ($productId && $quantity > 0) {
                     $product = Product::find($productId);
+
                     if ($product) {
+
                         if ($type === 'sale') {
                             $product->decrement('quantity', $quantity);
                         } elseif ($type === 'return') {
@@ -344,25 +376,20 @@ class InvoiceController extends Controller {
 
             }
 
-            // Update payment and details
             $payment = Payment::where('invoice_id', $invoice->id)->first();
 
             if ($payment) {
                 $payment->update([
+                    'customer_id' => $isNewCustomer ? $newCustomer->id : $request->customer_id,
                     'paid_amount' => $request->paid_amount,
-                    'due_amount'  => $newDue,
+                    'due_amount'  => $request->due_amount,
                 ]);
 
+                // Update payment details
                 $paymentDetail = PaymentDetail::where('payment_id', $payment->id)->first();
 
                 if ($paymentDetail) {
                     $paymentDetail->update([
-                        'paid_amount'      => $request->paid_amount,
-                        'transaction_type' => $request->transaction_type,
-                    ]);
-                } else {
-                    PaymentDetail::create([
-                        'payment_id'       => $payment->id,
                         'paid_amount'      => $request->paid_amount,
                         'transaction_type' => $request->transaction_type,
                     ]);
@@ -371,23 +398,25 @@ class InvoiceController extends Controller {
             }
 
             foreach ($request->type as $key => $type) {
+
                 if (strtolower($type) === 'return') {
                     SaleReturn::create([
                         'invoice_id'   => $invoice->id,
-                        'product_id'   => $request->product_id[$key] ?? null,
-                        'product_code' => $request->product_code[$key] ?? '',
-                        'product_name' => $request->product_name[$key] ?? 'Unknown Product',
-                        'quantity'     => $request->quantity[$key] ?? 0,
-                        'price'        => $request->price[$key] ?? 0.00,
-                        'total'        => $request->total[$key] ?? 0.00,
+                        'product_id'   => $request->product_id[$key],
+                        'product_code' => $request->product_code[$key],
+                        'product_name' => $request->product_name[$key],
+                        'quantity'     => $request->quantity[$key],
+                        'price'        => $request->price[$key],
+                        'total'        => $request->total[$key],
                     ]);
                 }
+
             }
 
             DB::commit();
 
             $notification = [
-                'message'    => 'Sale updated successfully.',
+                'message'    => 'Invoice updated successfully.',
                 'alert-type' => 'success',
             ];
             return redirect()->route('print.invoice', ['id' => $invoice->id])->with($notification);
@@ -489,7 +518,6 @@ class InvoiceController extends Controller {
                 $quantity = $request->quantity[$key] ?? 0;
                 $type     = strtolower($request->type[$key] ?? '');
 
-
                 // Create invoice detail
                 InvoiceDetail::create([
                     'invoice_id'   => $invoice->id,
@@ -580,161 +608,253 @@ class InvoiceController extends Controller {
 
     }
 
-    // public function updateWholesaleSale(Request $request, $id) {
-    //     DB::beginTransaction();
+// public function updateWholesaleSale(Request $request, $id) {
 
-    //     try {
-    //         // Validate request data
-    //         $request->validate([
-    //             'product_id'  => 'required|array',
-    //             'type'        => 'required|array',
-    //             'quantity'    => 'required|array',
-    //             'price'       => 'required|array',
-    //             'total'       => 'required|array',
-    //             'customer_id' => 'required',
-    //         ]);
+//     DB::beginTransaction();
 
-    //         // Fetch the existing invoice
-    //         $invoice = Invoice::findOrFail($id);
+//     try {
 
-    //         if ($request->customer_id == 0) {
-    //             $customer = Customer::create([
-    //                 'shopname'  => $request->shopname,
-    //                 'name'      => $request->name,
-    //                 'mobile_no' => $request->mobile_no,
-    //                 'address'   => $request->address,
-    //             ]);
-    //         } else {
-    //             $customer = Customer::findOrFail($request->customer_id);
-    //             $customer->update([
-    //                 'shopname'  => $request->shopname ?? $customer->shopname,
-    //                 'name'      => $request->name ?? $customer->name,
-    //                 'mobile_no' => $request->mobile_no ?? $customer->mobile_no,
-    //                 'address'   => $request->address ?? $customer->address,
-    //             ]);
-    //         }
+//         // Validate request data
 
-    //         // Update invoice details
-    //         $invoice->update([
-    //             'date'                => $request->date,
-    //             'sale_type'           => 'wholesale',
-    //             'comment'             => $request->comment,
-    //             'employee_id'         => $request->employee_id,
-    //             'customer_id'         => $customer->id,
-    //             'total_amount'        => $request->total_amount,
-    //             'percentage_discount' => $request->percentage_discount,
-    //             'flat_discount'       => $request->flat_discount,
-    //             'shipping'            => $request->shipping,
-    //             'labour'              => $request->labour,
-    //             'payable_amount'      => $request->payable_amount,
-    //             'due_amount'          => $request->due_amount,
-    //             'status'              => $request->status,
-    //         ]);
+//         $request->validate([
 
-    //         // Fetch existing invoice details for stock adjustment
-    //         $existingDetails = InvoiceDetail::where('invoice_id', $id)->get()->keyBy('product_id');
+//             'product_id'  => 'required|array',
 
-    //         foreach ($request->product_id as $key => $productId) {
-    //             $newQuantity = $request->quantity[$key];
-    //             $newType     = strtolower($request->type[$key]);
+//             'type'        => 'required|array',
 
-    //             $oldDetail = $existingDetails->get($productId);
+//             'quantity'    => 'required|array',
 
-    //             $oldQuantity = $oldDetail ? $oldDetail->quantity : 0;
-    //             $oldType     = $oldDetail ? strtolower($oldDetail->type) : null;
+//             'price'       => 'required|array',
 
-    //             $quantityAdjustment = 0;
+//             'total'       => 'required|array',
 
-    //             if ($oldDetail) {
+//             'customer_id' => 'required',
 
-    //                 if ($oldType === 'sale') {
+//         ]);
 
-    //                     if ($newType === 'sale') {
-    //                         $quantityAdjustment = $oldQuantity - $newQuantity;
-    //                     } elseif ($newType === 'return') {
-    //                         $quantityAdjustment = $oldQuantity + $newQuantity;
-    //                     }
+//         // Fetch the existing invoice
 
-    //                 } elseif ($oldType === 'return') {
+//         $invoice = Invoice::findOrFail($id);
 
-    //                     if ($newType === 'return') {
-    //                         $quantityAdjustment = $newQuantity - $oldQuantity;
-    //                     } elseif ($newType === 'sale') {
-    //                         $quantityAdjustment = -($oldQuantity + $newQuantity);
-    //                     }
+//         if ($request->customer_id == 0) {
 
-    //                 }
+//             $customer = Customer::create([
 
-    //             } else {
-    //                 $quantityAdjustment = $newType === 'sale' ? -$newQuantity : $newQuantity;
-    //             }
+//                 'shopname'  => $request->shopname,
 
-    //             if ($quantityAdjustment !== 0) {
-    //                 $product = Product::lockForUpdate()->find($productId);
+//                 'name'      => $request->name,
 
-    //                 if ($product) {
+//                 'mobile_no' => $request->mobile_no,
 
-    //                     if ($quantityAdjustment < 0) {
-    //                         $decrementValue = abs($quantityAdjustment);
+//                 'address'   => $request->address,
 
-    //                         if ($product->quantity < $decrementValue) {
-    //                             throw new \Exception("Insufficient stock for product: {$product->name}");
-    //                         }
+//             ]);
 
-    //                         $product->decrement('quantity', $decrementValue);
-    //                     } else {
-    //                         $product->increment('quantity', $quantityAdjustment);
-    //                     }
+//         } else {
 
-    //                 }
+//             $customer = Customer::findOrFail($request->customer_id);
 
-    //             }
+//             $customer->update([
 
-    //             // Update or create invoice detail
-    //             InvoiceDetail::updateOrCreate(
-    //                 ['invoice_id' => $id, 'product_id' => $productId],
-    //                 [
-    //                     'product_code' => $request->product_code[$key] ?? '',
-    //                     'product_name' => $request->product_name[$key] ?? 'Unknown Product',
-    //                     'type'         => $newType,
-    //                     'quantity'     => $newQuantity,
-    //                     'price'        => $request->price[$key],
-    //                     'total'        => $request->total[$key],
-    //                 ]
-    //             );
-    //         }
+//                 'shopname'  => $request->shopname ?? $customer->shopname,
 
-    //         // Update Payment details
-    //         $payment = Payment::where('invoice_id', $id)->first();
+//                 'name'      => $request->name ?? $customer->name,
 
-    //         if ($payment) {
-    //             $payment->update([
-    //                 'paid_amount'         => $request->paid_amount,
-    //                 'due_amount'          => $request->due_amount,
-    //                 'previous_due_amount' => $customer->previous_due_amount,
-    //             ]);
+//                 'mobile_no' => $request->mobile_no ?? $customer->mobile_no,
 
-    //             PaymentDetail::where('payment_id', $payment->id)->delete();
-    //             PaymentDetail::create([
-    //                 'payment_id'       => $payment->id,
-    //                 'paid_amount'      => $request->paid_amount,
-    //                 'transaction_type' => is_array($request->transaction_type) ? $request->transaction_type[0] : $request->transaction_type,
-    //             ]);
-    //         }
+//                 'address'   => $request->address ?? $customer->address,
 
-    //         DB::commit();
+//             ]);
 
-    //         return redirect()->route('print.invoice', ['id' => $invoice->id])->with([
-    //             'message'    => 'Invoice updated successfully.',
-    //             'alert-type' => 'success',
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         return response()->json(['error' => $e->getMessage()], 500);
-    //     }
+//         }
+
+//         // Update invoice details
+
+//         $invoice->update([
+
+//             'date'                => $request->date,
+
+//             'sale_type'           => 'wholesale',
+
+//             'comment'             => $request->comment,
+
+//             'employee_id'         => $request->employee_id,
+
+//             'customer_id'         => $customer->id,
+
+//             'total_amount'        => $request->total_amount,
+
+//             'percentage_discount' => $request->percentage_discount,
+
+//             'flat_discount'       => $request->flat_discount,
+
+//             'shipping'            => $request->shipping,
+
+//             'labour'              => $request->labour,
+
+//             'payable_amount'      => $request->payable_amount,
+
+//             'due_amount'          => $request->due_amount,
+
+//             'status'              => $request->status,
+
+//         ]);
+
+//         // Fetch existing invoice details for stock adjustment
+
+//         $existingDetails = InvoiceDetail::where('invoice_id', $id)->get()->keyBy('product_id');
+
+//         foreach ($request->product_id as $key => $productId) {
+
+//             $newQuantity = $request->quantity[$key];
+
+//             $newType     = strtolower($request->type[$key]);
+
+//             $oldDetail = $existingDetails->get($productId);
+
+//             $oldQuantity = $oldDetail ? $oldDetail->quantity : 0;
+
+//             $oldType     = $oldDetail ? strtolower($oldDetail->type) : null;
+
+//             $quantityAdjustment = 0;
+
+//             if ($oldDetail) {
+
+//                 if ($oldType === 'sale') {
+
+//                     if ($newType === 'sale') {
+
+//                         $quantityAdjustment = $oldQuantity - $newQuantity;
+
+//                     } elseif ($newType === 'return') {
+
+//                         $quantityAdjustment = $oldQuantity + $newQuantity;
+
+//                     }
+
+//                 } elseif ($oldType === 'return') {
+
+//                     if ($newType === 'return') {
+
+//                         $quantityAdjustment = $newQuantity - $oldQuantity;
+
+//                     } elseif ($newType === 'sale') {
+
+//                         $quantityAdjustment = -($oldQuantity + $newQuantity);
+
+//                     }
+
+//                 }
+
+//             } else {
+
+//                 $quantityAdjustment = $newType === 'sale' ? -$newQuantity : $newQuantity;
+
+//             }
+
+//             if ($quantityAdjustment !== 0) {
+
+//                 $product = Product::lockForUpdate()->find($productId);
+
+//                 if ($product) {
+
+//                     if ($quantityAdjustment < 0) {
+
+//                         $decrementValue = abs($quantityAdjustment);
+
+//                         if ($product->quantity < $decrementValue) {
+
+//                             throw new \Exception("Insufficient stock for product: {$product->name}");
+
+//                         }
+
+//                         $product->decrement('quantity', $decrementValue);
+
+//                     } else {
+
+//                         $product->increment('quantity', $quantityAdjustment);
+
+//                     }
+
+//                 }
+
+//             }
+
+//             // Update or create invoice detail
+
+//             InvoiceDetail::updateOrCreate(
+
+//                 ['invoice_id' => $id, 'product_id' => $productId],
+
+//                 [
+
+//                     'product_code' => $request->product_code[$key] ?? '',
+
+//                     'product_name' => $request->product_name[$key] ?? 'Unknown Product',
+
+//                     'type'         => $newType,
+
+//                     'quantity'     => $newQuantity,
+
+//                     'price'        => $request->price[$key],
+
+//                     'total'        => $request->total[$key],
+
+//                 ]
+
+//             );
+
+//         }
+
+//         // Update Payment details
+
+//         $payment = Payment::where('invoice_id', $id)->first();
+
+//         if ($payment) {
+
+//             $payment->update([
+
+//                 'paid_amount'         => $request->paid_amount,
+
+//                 'due_amount'          => $request->due_amount,
+
+//                 'previous_due_amount' => $customer->previous_due_amount,
+
+//             ]);
+
+//             PaymentDetail::where('payment_id', $payment->id)->delete();
+
+//             PaymentDetail::create([
+
+//                 'payment_id'       => $payment->id,
+
+//                 'paid_amount'      => $request->paid_amount,
+
+//                 'transaction_type' => is_array($request->transaction_type) ? $request->transaction_type[0] : $request->transaction_type,
+
+//             ]);
+
+//         }
+
+//         DB::commit();
+
+//         return redirect()->route('print.invoice', ['id' => $invoice->id])->with([
+
+//             'message'    => 'Invoice updated successfully.',
+
+//             'alert-type' => 'success',
+
+//         ]);
+
+//     } catch (\Exception $e) {
+
+//         DB::rollBack();
+
+//         return response()->json(['error' => $e->getMessage()], 500);
+
+//     }
 
     // }
-
 
     public function updateWholesaleSale(Request $request, $invoiceId) {
         DB::beginTransaction();
@@ -895,6 +1015,7 @@ class InvoiceController extends Controller {
         }
 
     }
+
     public function PrintInvoice($id) {
         $invoice = Invoice::with(['invoice_details', 'employee'])->findOrFail($id);
 

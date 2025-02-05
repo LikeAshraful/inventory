@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Dec 01, 2024 at 06:36 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.1.12
+-- Host: 127.0.0.1
+-- Generation Time: Jan 20, 2025 at 03:49 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `posbug`
+-- Database: `updatepos`
 --
 
 -- --------------------------------------------------------
@@ -83,27 +83,10 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `shopname`, `name`, `customer_image`, `mobile_no`, `email`, `address`, `nid`, `note`, `previous_due_amount`, `status`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 'alfaruk', 'raju', 'upload/no_image.jpg', '01673459342', 'raju@gmail.com', 'madaninagar', '2345678', NULL, 500, 1, 1, 1, '2024-08-09 13:56:49', '2024-11-30 11:50:57'),
-(3, 'majynamaj', 'riyadh', NULL, '01618864442', NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, '2024-11-10 14:22:29', '2024-11-30 23:32:34'),
-(4, 'Tupighor', 'hasan', NULL, '015100000', NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, '2024-11-10 14:29:33', '2024-11-30 23:32:34'),
-(5, 'Tupighor', 'hasan', NULL, '015100000', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '2024-11-10 14:29:34', '2024-11-27 09:44:02'),
-(6, 'nokshibangla', 'test', NULL, '000000000', NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, '2024-11-14 03:03:09', '2024-11-25 12:15:45'),
-(7, 'alo', 'tania', NULL, '017000000', NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, '2024-11-19 07:37:51', '2024-11-30 23:32:34'),
-(8, 'kamalshop', 'kamal', NULL, '01868799280', NULL, NULL, NULL, NULL, 0, 1, NULL, NULL, '2024-11-25 12:07:25', '2024-11-30 23:32:34');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `customer_invoices`
---
-
-CREATE TABLE `customer_invoices` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `customer_id` bigint(20) UNSIGNED NOT NULL,
-  `invoice_id` bigint(20) UNSIGNED NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+(48, 'alfaruk', 'raju', 'upload/no_image.jpg', '01673459342', NULL, 'madaninagar', NULL, NULL, 9950, 1, NULL, 1, '2025-01-12 14:07:09', '2025-01-20 08:40:42'),
+(49, 'bilaty', 'riyadh', NULL, '01618864442', NULL, NULL, NULL, NULL, 20310, 1, NULL, NULL, '2025-01-13 13:13:00', '2025-01-20 08:46:38'),
+(50, 'majynamaj', 'hasan', NULL, '01670078952', NULL, NULL, NULL, NULL, 1000, 1, NULL, NULL, '2025-01-13 13:26:36', '2025-01-13 13:31:30'),
+(51, 'nokshibangla', 'test', NULL, '015100000', NULL, NULL, NULL, NULL, 7950, 1, NULL, NULL, '2025-01-20 08:42:31', '2025-01-20 08:42:31');
 
 -- --------------------------------------------------------
 
@@ -160,6 +143,8 @@ CREATE TABLE `failed_jobs` (
 
 CREATE TABLE `invoices` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `customer_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `sale_type` varchar(255) NOT NULL DEFAULT 'retail',
   `date` date DEFAULT NULL,
   `invoice_no` varchar(255) DEFAULT NULL,
   `shopname` varchar(255) DEFAULT NULL,
@@ -185,6 +170,22 @@ CREATE TABLE `invoices` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `invoices`
+--
+
+INSERT INTO `invoices` (`id`, `customer_id`, `sale_type`, `date`, `invoice_no`, `shopname`, `name`, `mobile_no`, `employee_id`, `status`, `total_amount`, `return_amount`, `percentage_discount`, `flat_discount`, `shipping`, `labour`, `payable_amount`, `paid_amount`, `due_amount`, `previous_due_amount`, `transaction_type`, `comment`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(127, 49, 'retail', '2025-01-13', '1', NULL, NULL, NULL, 1, 0, 19500.00, NULL, 2, NULL, 100.00, 50.00, 19260.00, NULL, 19260.00, 19260.00, NULL, NULL, 1, NULL, '2025-01-13 13:13:00', '2025-01-13 13:13:00'),
+(128, 49, 'retail', '2025-01-13', '2', NULL, NULL, NULL, 1, 0, 1500.00, NULL, NULL, 100.00, 100.00, 50.00, 1550.00, NULL, 50.00, 19310.00, NULL, NULL, 1, NULL, '2025-01-13 13:13:56', '2025-01-13 13:13:56'),
+(129, 48, 'retail', '2025-01-13', '3', NULL, NULL, NULL, 1, 0, 1500.00, NULL, NULL, NULL, NULL, NULL, 1500.00, NULL, 100.00, 1100.00, NULL, NULL, 1, NULL, '2025-01-13 13:15:01', '2025-01-13 13:15:01'),
+(130, 48, 'retail', '2025-01-13', '4', NULL, NULL, NULL, 1, 0, 1500.00, NULL, NULL, NULL, NULL, NULL, 1500.00, NULL, -1000.00, 100.00, NULL, NULL, 1, NULL, '2025-01-13 13:15:51', '2025-01-13 13:15:51'),
+(131, 50, 'wholesale', '2025-01-13', '5', NULL, NULL, NULL, 1, 0, 4000.00, NULL, NULL, NULL, NULL, NULL, 4000.00, NULL, 4000.00, 4000.00, NULL, NULL, 1, NULL, '2025-01-13 13:26:36', '2025-01-13 13:26:36'),
+(132, 50, 'retail', '2025-01-13', '6', NULL, NULL, NULL, 1, 0, 15000.00, NULL, NULL, NULL, NULL, NULL, 15000.00, NULL, -1000.00, 3000.00, NULL, NULL, 1, NULL, '2025-01-13 13:27:25', '2025-01-13 13:27:25'),
+(133, 50, 'retail', '2025-01-13', '7', NULL, NULL, NULL, 1, 0, 55000.00, NULL, NULL, NULL, NULL, NULL, 55000.00, NULL, -2000.00, 1000.00, NULL, NULL, 1, NULL, '2025-01-13 13:31:30', '2025-01-20 08:31:42'),
+(134, 48, 'retail', '2025-01-20', '8', NULL, NULL, NULL, 1, 0, 15000.00, NULL, 2, NULL, 100.00, 50.00, 14850.00, NULL, 9850.00, 9950.00, NULL, NULL, 1, NULL, '2025-01-20 08:40:42', '2025-01-20 08:40:42'),
+(135, 51, 'wholesale', '2025-01-20', '9', NULL, NULL, NULL, 1, 0, 110000.00, NULL, 2, NULL, 100.00, 50.00, 107950.00, NULL, 7950.00, 7950.00, NULL, NULL, 1, NULL, '2025-01-20 08:42:31', '2025-01-20 08:42:31'),
+(136, 49, 'retail', '2025-01-20', '10', NULL, NULL, NULL, 1, 0, 1500.00, NULL, NULL, NULL, NULL, NULL, 1000.00, NULL, 1000.00, 20310.00, NULL, NULL, 1, NULL, '2025-01-20 08:46:38', '2025-01-20 08:46:38');
+
 -- --------------------------------------------------------
 
 --
@@ -204,6 +205,23 @@ CREATE TABLE `invoice_details` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `invoice_details`
+--
+
+INSERT INTO `invoice_details` (`id`, `invoice_id`, `product_id`, `product_code`, `product_name`, `type`, `quantity`, `price`, `total`, `created_at`, `updated_at`) VALUES
+(275, 127, 16, 'PC09', 'sleeping bag - PC09', 'sale', 13, 1500.00, 19500.00, '2025-01-13 13:13:00', '2025-01-13 13:13:00'),
+(276, 128, 17, 'PC10', 'sleeping bag - PC10', 'sale', 1, 1500.00, 1500.00, '2025-01-13 13:13:56', '2025-01-13 13:13:56'),
+(277, 129, 16, 'PC09', 'sleeping bag - PC09', 'sale', 1, 1500.00, 1500.00, '2025-01-13 13:15:01', '2025-01-13 13:15:01'),
+(282, 130, 16, 'PC09', 'sleeping bag', 'sale', 1, 1500.00, 1500.00, '2025-01-19 13:16:47', '2025-01-19 13:16:47'),
+(283, 132, 17, 'PC10', 'sleeping bag', 'sale', 10, 1500.00, 15000.00, '2025-01-20 08:23:40', '2025-01-20 08:23:40'),
+(284, 133, 28, 'model 71', 'blessure', 'sale', 10, 5500.00, 55000.00, '2025-01-20 08:31:42', '2025-01-20 08:31:42'),
+(286, 131, 18, 'PC11', 'shahi Tupi', 'sale', 10, 400.00, 4000.00, '2025-01-20 08:37:06', '2025-01-20 08:37:06'),
+(287, 134, 17, 'PC10', 'sleeping bag - PC10', 'sale', 10, 1500.00, 15000.00, '2025-01-20 08:40:42', '2025-01-20 08:40:42'),
+(289, 135, 17, 'PC10', 'sleeping bag', 'sale', 100, 1100.00, 110000.00, '2025-01-20 08:44:08', '2025-01-20 08:44:08'),
+(290, 136, 20, 'PC13', 'Juta Sneakers For Men - PC13', 'sale', 1, 1500.00, 1500.00, '2025-01-20 08:46:38', '2025-01-20 08:46:38'),
+(291, 136, 22, 'PC14', 'pant - PC14', 'return', 1, 500.00, -500.00, '2025-01-20 08:46:38', '2025-01-20 08:46:38');
 
 -- --------------------------------------------------------
 
@@ -289,7 +307,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (151, '2024_11_27_055749_create_invoice_details_table', 48),
 (152, '2024_11_27_104044_create_payment_details_table', 48),
 (153, '2024_11_27_105942_create_sale_returns_table', 48),
-(154, '2024_11_28_153743_create_customer_invoices_table', 48);
+(154, '2024_11_28_153743_create_customer_invoices_table', 48),
+(155, '2025_01_01_102730_add_sale_type_to_invoices_table', 49),
+(156, '2025_01_03_104839_add_customer_id_to_invoices_table', 50);
 
 -- --------------------------------------------------------
 
@@ -320,6 +340,22 @@ CREATE TABLE `payments` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `payments`
+--
+
+INSERT INTO `payments` (`id`, `invoice_id`, `customer_id`, `paid_amount`, `due_amount`, `previous_due_amount`, `created_at`, `updated_at`) VALUES
+(125, 127, 49, NULL, '19260.00', '0', '2025-01-13 13:13:00', '2025-01-13 13:13:00'),
+(126, 128, 49, 1500.00, '50.00', '19260', '2025-01-13 13:13:56', '2025-01-13 13:13:56'),
+(127, 129, 48, 1400.00, '100.00', '1000', '2025-01-13 13:15:01', '2025-01-13 13:15:01'),
+(128, 130, 48, 2500.00, '-1000', '100', '2025-01-13 13:15:51', '2025-01-19 13:16:47'),
+(129, 131, 50, 4000.00, '0.00', '1000', '2025-01-13 13:26:36', '2025-01-20 08:37:06'),
+(130, 132, 50, 15000.00, '0.00', '1000', '2025-01-13 13:27:25', '2025-01-20 08:23:40'),
+(131, 133, 50, 56000.00, '-1000.00', '1000', '2025-01-13 13:31:30', '2025-01-20 08:31:42'),
+(132, 134, 48, 5000.00, '9850.00', '100', '2025-01-20 08:40:42', '2025-01-20 08:40:42'),
+(133, 135, 51, 107000.00, '950.00', '7950', '2025-01-20 08:42:31', '2025-01-20 08:44:08'),
+(134, 136, 49, NULL, '1000.00', '19310', '2025-01-20 08:46:38', '2025-01-20 08:46:38');
+
 -- --------------------------------------------------------
 
 --
@@ -335,6 +371,22 @@ CREATE TABLE `payment_details` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `payment_details`
+--
+
+INSERT INTO `payment_details` (`id`, `payment_id`, `amount`, `paid_amount`, `transaction_type`, `created_at`, `updated_at`) VALUES
+(138, 125, NULL, NULL, 'Cash', '2025-01-13 13:13:00', '2025-01-13 13:13:00'),
+(139, 126, NULL, 1500.00, 'Cash', '2025-01-13 13:13:56', '2025-01-13 13:13:56'),
+(140, 127, NULL, 1400.00, 'Cash', '2025-01-13 13:15:01', '2025-01-13 13:15:01'),
+(145, 128, NULL, 2500.00, 'Cash', '2025-01-19 13:16:47', '2025-01-19 13:16:47'),
+(146, 130, NULL, 15000.00, 'Cash', '2025-01-20 08:23:40', '2025-01-20 08:23:40'),
+(147, 131, NULL, 56000.00, 'Cash', '2025-01-20 08:31:42', '2025-01-20 08:31:42'),
+(149, 129, NULL, 4000.00, 'Cash', '2025-01-20 08:37:06', '2025-01-20 08:37:06'),
+(150, 132, NULL, 5000.00, 'Cash', '2025-01-20 08:40:42', '2025-01-20 08:40:42'),
+(152, 133, NULL, 107000.00, 'Cash', '2025-01-20 08:44:08', '2025-01-20 08:44:08'),
+(153, 134, NULL, NULL, 'Cash', '2025-01-20 08:46:38', '2025-01-20 08:46:38');
 
 -- --------------------------------------------------------
 
@@ -387,17 +439,18 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `supplier_id`, `unit_id`, `category_id`, `name`, `product_code`, `product_image`, `buying_date`, `expire_date`, `buying_price`, `retail_sale`, `wholesale`, `quantity`, `status`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(7, 5, 2, 3, 'short panjabi', 'PC07', 'upload/product/1793074119095826.webp', '2024-03-09', '2025-03-09', '500', '1000', '800', 59, 1, 1, 1, '2024-03-09 12:03:11', '2024-11-25 12:20:50'),
-(8, 6, 2, 5, 'Nowka Moshary', 'PC08', 'upload/product/1793074095628992.jpg', '2024-03-10', '2025-03-10', '1000', '1200', '1100', 24, 1, 1, 1, '2024-03-09 12:11:44', '2024-11-25 08:22:50'),
-(12, 4, 2, 5, 'Tabu Moshary', 'P122', 'upload/product/1792627848840505.jpg', NULL, NULL, '1000', '1200', '1100', 24, 1, NULL, 1, '2024-03-10 12:14:05', '2024-11-26 10:02:29'),
-(14, 6, 2, 3, 'long panjabi', 'P144', 'upload/product/1793074230360790.webp', NULL, NULL, '200', '500', '400', 26, 1, NULL, 1, '2024-03-10 12:14:05', '2024-11-26 09:46:57'),
-(16, 8, 2, 8, 'sleeping bag', 'PC09', 'upload/product/1803390342616428.jpg', '2024-07-01', '2025-05-01', '1200', '1500', '1400', 11, 1, 1, 1, '2024-07-01 09:17:32', '2024-11-25 12:07:25'),
-(17, 5, 2, 11, 'sleeping bag', 'PC10', 'upload/product/1803390529901148.jpg', NULL, NULL, '1000', '1500', '1100', 219, 1, 1, 1, '2024-07-01 09:20:30', '2024-11-26 06:17:54'),
-(18, 5, 2, 1, 'shahi Tupi', 'PC11', 'upload/product/1803390650602777.jpg', NULL, NULL, '300', '500', '400', 20, 1, 1, 1, '2024-07-01 09:22:26', '2024-08-13 13:05:21'),
-(19, 8, 2, 4, 'ladies bag', 'PC12', 'upload/product/1803390721860996.jpg', NULL, NULL, '1000', '1200', '1100', 10, 1, 1, 1, '2024-07-01 09:23:33', '2024-08-13 13:05:12'),
-(20, 6, 2, 9, 'Juta Sneakers For Men', 'PC13', 'upload/product/1803390817593513.webp', NULL, NULL, '1200', '1500', '1400', 109, 1, 1, 1, '2024-07-01 09:25:05', '2024-11-25 12:19:29'),
-(22, 9, 2, 2, 'pant', 'PC14', 'upload/product/1804673670798128.jpg', NULL, NULL, '300', '500', '400', 10, 1, 1, 1, '2024-07-15 13:15:29', '2024-08-13 13:04:54'),
-(25, 4, 2, 1, 'test', 'PC15', 'upload/no_image.jpg', NULL, NULL, '1000', '1200', '1100', 100, 1, 1, 1, '2024-08-12 14:09:41', '2024-08-13 13:04:43');
+(7, 5, 2, 3, 'short panjabi', 'PC07', 'upload/product/1793074119095826.webp', '2024-03-09', '2025-03-09', '500', '1000', '800', 1, 1, 1, 1, '2024-03-09 12:03:11', '2025-01-12 14:24:56'),
+(8, 6, 2, 5, 'Nowka Moshary', 'PC08', 'upload/product/1793074095628992.jpg', '2024-03-10', '2025-03-10', '1000', '1200', '1100', 203, 1, 1, 1, '2024-03-09 12:11:44', '2025-01-13 13:11:15'),
+(16, 8, 2, 8, 'sleeping bag', 'PC09', 'upload/product/1803390342616428.jpg', '2024-07-01', '2025-05-01', '1200', '1500', '1400', -3, 1, 1, 1, '2024-07-01 09:17:32', '2025-01-19 13:16:47'),
+(17, 5, 2, 11, 'sleeping bag', 'PC10', 'upload/product/1803390529901148.jpg', NULL, NULL, '1000', '1500', '1100', -50, 1, 1, 1, '2024-07-01 09:20:30', '2025-01-20 08:44:08'),
+(18, 5, 2, 1, 'shahi Tupi', 'PC11', 'upload/product/1803390650602777.jpg', NULL, NULL, '300', '500', '400', 0, 1, 1, 1, '2024-07-01 09:22:26', '2025-01-20 08:37:06'),
+(19, 8, 2, 4, 'ladies bag', 'PC12', 'upload/product/1803390721860996.jpg', NULL, NULL, '1000', '1200', '1100', 11, 1, 1, 1, '2024-07-01 09:23:33', '2025-01-04 07:50:16'),
+(20, 6, 2, 9, 'Juta Sneakers For Men', 'PC13', 'upload/product/1803390817593513.webp', NULL, NULL, '1200', '1500', '1400', 108, 1, 1, 1, '2024-07-01 09:25:05', '2025-01-20 08:46:38'),
+(22, 9, 2, 2, 'pant', 'PC14', 'upload/product/1804673670798128.jpg', NULL, NULL, '300', '500', '400', -8, 1, 1, 1, '2024-07-15 13:15:29', '2025-01-20 08:46:38'),
+(25, 4, 2, 1, 'test', 'PC15', 'upload/no_image.jpg', NULL, NULL, '1000', '1200', '1100', 100, 1, 1, 1, '2024-08-12 14:09:41', '2024-08-13 13:04:43'),
+(26, 8, 2, 6, 'chain patta', '63', 'upload/no_image.jpg', NULL, NULL, '1000', '1200', '1100', 140, 1, 1, NULL, '2025-01-04 09:00:33', '2025-01-04 09:13:59'),
+(27, 9, 2, 4, 'school bag', 'model 72', 'upload/no_image.jpg', NULL, NULL, '2000', '2500', '2100', -12, 1, 1, 1, '2025-01-04 09:15:43', '2025-01-04 13:50:14'),
+(28, 8, 2, 3, 'blessure', 'model 71', 'upload/no_image.jpg', NULL, NULL, '5000', '6000', '5500', 80, 1, 1, 1, '2025-01-04 09:20:09', '2025-01-20 08:31:42');
 
 -- --------------------------------------------------------
 
@@ -428,15 +481,8 @@ CREATE TABLE `purchases` (
 --
 
 INSERT INTO `purchases` (`id`, `purchase_no`, `supplier_id`, `date`, `transaction_type`, `discount_amount`, `shipping`, `paid_amount`, `estimated_amount`, `due_amount`, `status`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(4, '1380', 6, '2024-07-03', 'Cash', '100.00', '100.00', '5084.00', '5400.00', '316.00', 0, NULL, 1, '2024-07-03 12:33:56', '2024-07-03 14:20:33'),
-(5, '1381', 5, '2024-07-03', 'Cash', '100.00', '50.00', '1200.00', '2350.00', '1150.00', 0, NULL, NULL, '2024-07-03 12:39:15', '2024-07-03 12:39:15'),
-(6, '1383', 7, '2024-07-03', 'Cash', '100.00', '80.00', '1200.00', '1980.00', '780.00', 0, NULL, NULL, '2024-07-03 12:39:59', '2024-07-03 12:39:59'),
-(7, '1385', 8, '2024-07-03', 'Cash', '100.00', '50.00', '350.00', '350.00', '0.00', 0, NULL, NULL, '2024-07-03 12:43:24', '2024-07-03 12:43:24'),
-(8, '1386', 4, '2024-07-03', 'Cash', '100.00', '50.00', '0.00', '950.00', '950.00', 0, 1, 1, '2024-07-03 13:00:05', '2024-07-03 14:34:39'),
-(9, '1390', 6, '2024-07-04', 'Cash', '100.00', '80.00', '4000.00', '4580.00', '580.00', 0, 1, 1, '2024-07-04 13:57:40', '2024-07-04 13:58:48'),
-(11, '1234', 4, '2024-08-13', 'Cash', '0.00', '0.00', '0.00', '20000.00', '20000.00', 0, 1, NULL, '2024-08-13 13:13:49', '2024-08-13 13:13:49'),
-(12, '1400', 6, '2024-08-24', 'Cash', '100.00', '50.00', '10000.00', '19950.00', '9950.00', 0, 1, NULL, '2024-08-24 08:50:09', '2024-08-24 08:50:09'),
-(13, '1400', 4, '2024-08-24', 'Cash', '100.00', '50.00', '10000.00', '19950.00', '9950.00', 0, 1, NULL, '2024-08-24 09:12:58', '2024-08-24 09:12:58');
+(14, '1', 4, '2024-12-10', 'Cash', 100.00, 100.00, 50000.00, 50000.00, 0.00, 0, 1, NULL, '2024-12-10 07:55:17', '2024-12-10 07:55:17'),
+(15, '2', 5, '2024-12-10', 'Cash', 100.00, 50.00, 40000.00, 42950.00, 2950.00, 0, 1, NULL, '2024-12-10 07:56:45', '2024-12-10 07:56:45');
 
 -- --------------------------------------------------------
 
@@ -462,20 +508,10 @@ CREATE TABLE `purchase_details` (
 --
 
 INSERT INTO `purchase_details` (`id`, `purchase_id`, `product_id`, `buying_qty`, `expire_date`, `buying_price`, `retail_sale`, `total_amount`, `created_at`, `updated_at`) VALUES
-(9, 5, 20, 2, NULL, '1200.00', '1500.00', '2400.00', '2024-07-03 12:39:15', '2024-07-03 12:39:15'),
-(10, 6, 19, 2, NULL, '1000.00', '1200.00', '2000.00', '2024-07-03 12:39:59', '2024-07-03 12:39:59'),
-(11, 7, 14, 2, NULL, '200.00', '500.00', '400.00', '2024-07-03 12:43:24', '2024-07-03 12:43:24'),
-(18, 4, 12, 2, NULL, '1000.00', '1200.00', '2000.00', '2024-07-03 14:20:33', '2024-07-03 14:20:33'),
-(19, 4, 14, 2, NULL, '200.00', '500.00', '400.00', '2024-07-03 14:20:33', '2024-07-03 14:20:33'),
-(20, 4, 16, 2, NULL, '1200.00', '1500.00', '2400.00', '2024-07-03 14:20:33', '2024-07-03 14:20:33'),
-(21, 4, 18, 2, NULL, '300.00', '500.00', '600.00', '2024-07-03 14:20:33', '2024-07-03 14:20:33'),
-(24, 8, 7, 2, NULL, '500.00', '1000.00', '1000.00', '2024-07-03 14:34:39', '2024-07-03 14:34:39'),
-(27, 9, 18, 2, NULL, '300.00', '500.00', '600.00', '2024-07-04 13:58:48', '2024-07-04 13:58:48'),
-(28, 9, 17, 2, NULL, '1000.00', '1500.00', '2000.00', '2024-07-04 13:58:48', '2024-07-04 13:58:48'),
-(29, 9, 8, 2, NULL, '1000.00', '1200.00', '2000.00', '2024-07-04 13:58:48', '2024-07-04 13:58:48'),
-(35, 11, 25, 20, NULL, '1000.00', '1200.00', '20000.00', '2024-08-13 13:13:49', '2024-08-13 13:13:49'),
-(36, 12, 7, 40, NULL, '500.00', '1000.00', '20000.00', '2024-08-24 08:50:09', '2024-08-24 08:50:09'),
-(37, 13, 7, 40, NULL, '500.00', '1000.00', '20000.00', '2024-08-24 09:12:58', '2024-08-24 09:12:58');
+(38, 14, 7, 100, NULL, 500.00, 1000.00, 50000.00, '2024-12-10 07:55:17', '2024-12-10 07:55:17'),
+(39, 15, 8, 10, NULL, 1000.00, 1200.00, 10000.00, '2024-12-10 07:56:45', '2024-12-10 07:56:45'),
+(40, 15, 16, 20, NULL, 1200.00, 1500.00, 24000.00, '2024-12-10 07:56:45', '2024-12-10 07:56:45'),
+(41, 15, 18, 30, NULL, 300.00, 500.00, 9000.00, '2024-12-10 07:56:45', '2024-12-10 07:56:45');
 
 -- --------------------------------------------------------
 
@@ -495,6 +531,13 @@ CREATE TABLE `sale_returns` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `sale_returns`
+--
+
+INSERT INTO `sale_returns` (`id`, `invoice_id`, `product_id`, `product_code`, `product_name`, `quantity`, `price`, `total`, `created_at`, `updated_at`) VALUES
+(72, 136, 22, 'PC14', 'pant - PC14', 1, 500.00, -500.00, '2025-01-20 08:46:38', '2025-01-20 08:46:38');
 
 -- --------------------------------------------------------
 
@@ -599,14 +642,6 @@ ALTER TABLE `customers`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `customer_invoices`
---
-ALTER TABLE `customer_invoices`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `customer_invoices_customer_id_foreign` (`customer_id`),
-  ADD KEY `customer_invoices_invoice_id_foreign` (`invoice_id`);
-
---
 -- Indexes for table `employees`
 --
 ALTER TABLE `employees`
@@ -623,7 +658,8 @@ ALTER TABLE `failed_jobs`
 -- Indexes for table `invoices`
 --
 ALTER TABLE `invoices`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `invoices_customer_id_foreign` (`customer_id`);
 
 --
 -- Indexes for table `invoice_details`
@@ -724,13 +760,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT for table `customer_invoices`
---
-ALTER TABLE `customer_invoices`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `employees`
@@ -748,31 +778,31 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `invoices`
 --
 ALTER TABLE `invoices`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=137;
 
 --
 -- AUTO_INCREMENT for table `invoice_details`
 --
 ALTER TABLE `invoice_details`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=292;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=157;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
 
 --
 -- AUTO_INCREMENT for table `payment_details`
 --
 ALTER TABLE `payment_details`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=154;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -784,25 +814,25 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `purchases`
 --
 ALTER TABLE `purchases`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `purchase_details`
 --
 ALTER TABLE `purchase_details`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `sale_returns`
 --
 ALTER TABLE `sale_returns`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT for table `suppliers`
@@ -827,11 +857,10 @@ ALTER TABLE `users`
 --
 
 --
--- Constraints for table `customer_invoices`
+-- Constraints for table `invoices`
 --
-ALTER TABLE `customer_invoices`
-  ADD CONSTRAINT `customer_invoices_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `customer_invoices_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE;
+ALTER TABLE `invoices`
+  ADD CONSTRAINT `invoices_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `purchase_details`
