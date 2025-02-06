@@ -36,7 +36,6 @@
 										<option value="">Select Customer</option>
 										<option value="0">New Customer</option>
 										@foreach($customer as $cus)
-											<option value="{{ $cus->id }}">{{ $cus->name }} - {{ $cus->mobile_no }}</option>
 											<option value="{{ $cus->id }}" {{ $invoice->customer_id == $cus->id ? 'selected' : '' }}>{{ $cus->name }} - {{ $cus->mobile_no }}</option>
 										@endforeach
 									</select>
@@ -331,8 +330,7 @@ $('#customer_id').change(function () {
                return;
          }
          if (!invoice_qty || invoice_qty <= 0) {
-            alert('Please enter a valid quantity.');
-            return;
+            invoice_qty = 1;
          }
 
             // Check if product already exists in the table

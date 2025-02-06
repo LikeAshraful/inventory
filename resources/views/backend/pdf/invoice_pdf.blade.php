@@ -102,11 +102,7 @@
                                                             <td>{{ $details->product_name }}</td>
                                                             <td>{{ $details->quantity }}</td>
                                                             <td>{{ $details->price }}</td>
-                                                            
-                                                            
                                                             <td class="text-center">{{ $details->total }}</td>
-                                                            
-                                                            
                                                             
                                                         </tr>
                                                          @endforeach
