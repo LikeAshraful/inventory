@@ -112,6 +112,10 @@
                                     @endforeach
                                 </tbody>
                                 <tbody>
+									<tr>
+                                        <td colspan="7">Subtotal</td>
+                                        <td><input type="text" name="subtotal" id="subtotal" class="form-control estimated_amount" value="{{ isset($purchase) ? number_format($purchase->purchaseDetails->sum('total_amount'), 2) : '' }}" readonly style="background-color: #ddd;"></td>
+                                    </tr>
                                     <tr>
                                         <td colspan="7">Discount</td>
                                         <td><input type="text" name="discount_amount" id="discount_amount" class="form-control estimated_amount" placeholder="Discount Amount" value="{{ $purchase->discount_amount }}"></td>
@@ -227,23 +231,27 @@ $(document).ready(function(){
     });
 
     function calculateTotal() {
-        var sum = 0;
-        $('.buying_price').each(function() {
-            var qty = $(this).closest('tr').find('.buying_qty').val();
-            var total = $(this).val() * qty;
-            $(this).closest('tr').find('.total_amount').val(total);
-            sum += total;
-        });
+		var sum = 0; // For subtotal of all products
+		$('.buying_price').each(function() {
+			var qty = $(this).closest('tr').find('.buying_qty').val();
+			var total = $(this).val() * qty;
+			$(this).closest('tr').find('.total_amount').val(total);
+			sum += total; // Accumulate the product's total into the subtotal
+		});
 
-        var discount_amount = parseFloat($('#discount_amount').val()) || 0;
-        var shipping = parseFloat($('#shipping').val()) || 0;
-        var total_amount = sum - discount_amount + shipping;
-        $('#estimated_amount').val(total_amount);
+		// Display the subtotal in the respective field
+		$('#subtotal').val(sum.toFixed(2));
 
-        var paid_amount = parseFloat($('#paid_amount').val()) || 0;
-        var due_amount = total_amount - paid_amount;
-        $('#due_amount').val(due_amount);
-    }
+		// Retrieve and calculate other fields
+		var discount_amount = parseFloat($('#discount_amount').val()) || 0;
+		var shipping = parseFloat($('#shipping').val()) || 0;
+		var total_amount = sum - discount_amount + shipping; // Final total
+		$('#estimated_amount').val(total_amount.toFixed(2));
+
+		var paid_amount = parseFloat($('#paid_amount').val()) || 0;
+		var due_amount = total_amount - paid_amount; // Calculate due
+		$('#due_amount').val(due_amount.toFixed(2));
+	}
 });
 </script>
 @endsection

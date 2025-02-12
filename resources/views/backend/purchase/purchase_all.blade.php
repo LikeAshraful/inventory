@@ -45,9 +45,13 @@
 														<td>{{ $item->due_amount }}</td>
 														
 														<td>
-															<a href="{{ route('purchase.delete', $item->id) }}" class="btn btn-danger sm" title="Delete Data" id="delete"><i class="fas fa-trash-alt"></i></a>
+														
+															<a href="{{ route('print.purchaseinvoice',$item->id) }}" class="btn btn-info sm" title="Print Invoice" >  <i class="fa fa-print"></i> </a>
 															
 															<a href=" {{ route('purchase.edit',$item->id) }} " class="btn btn-info sm" title="Edit Data"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+															<a href="{{ route('purchase.delete', $item->id) }}" class="btn btn-danger sm" title="Delete Data" id="delete"><i class="fas fa-trash-alt"></i></a>
+															
+															
 														
 														</td>
 													</tr>

@@ -14,6 +14,11 @@
                                 </div>
                             </form>
                         </li>
+						<li class="dropdown notification-list">
+                            <a href="{{ route('pos.sale') }}" class="nav-link right-bar-toggle waves-effect waves-light">
+                              <span style="background-color:#f672a7;padding:5px;color:#fff"> <i class="mdi mdi-view-dashboard-outline"></i>&nbsp;POS</span>
+                            </a>
+                        </li>
     
                         <li class="dropdown d-inline-block d-lg-none">
                             <a class="nav-link dropdown-toggle arrow-none waves-effect waves-light" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">

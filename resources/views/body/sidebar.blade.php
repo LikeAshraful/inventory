@@ -150,6 +150,21 @@
                             </li>
 							
 							<li>
+                                <a href="#stock" data-bs-toggle="collapse">
+                                    <i class="mdi mdi-cart-outline"></i>
+                                    <span> Manage Stock </span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="stock">
+                                    <ul class="nav-second-level">
+                                        <li><a href="{{ route('stock.report') }}">Stock Report</a></li>
+										<li><a href="{{ route('stock.supplier.wise') }}">Supplier / Product Wise </a></li>
+										<li><a href="{{ route('damage.add') }}">Add Damage / Lost</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+							
+							<li>
                                 <a href="#purchase" data-bs-toggle="collapse">
                                     <i class="mdi mdi-cart-outline"></i>
                                     <span> Purchase </span>

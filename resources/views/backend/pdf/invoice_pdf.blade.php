@@ -1,10 +1,8 @@
 @extends('admin_dashboard')
 @section('admin')
 
-
             <div class="page-content">
                 
-
                     <!-- Start Content-->
                     <div class="container-fluid">
                         
@@ -103,7 +101,6 @@
                                                             <td>{{ $details->quantity }}</td>
                                                             <td>{{ $details->price }}</td>
                                                             <td class="text-center">{{ $details->total }}</td>
-                                                            
                                                         </tr>
                                                          @endforeach
                                                         </tbody>

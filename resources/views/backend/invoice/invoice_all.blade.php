@@ -49,7 +49,7 @@
 														</td>
 
 														<td>  {{ $item->sale_type }} </td> 
-														<td>  {{ $item->total_amount }} </td> 
+														<td>  {{ $item->payable_amount }} </td> 
 														
 														<!-- Display the total paid amount for the invoice -->
 														<td>
@@ -61,9 +61,9 @@
 														<td>  {{ $item->due_amount }} </td> 
 														
 														<td>  
-														<a href=" {{ route('invoice.edit',$item->id) }} " class="btn btn-info sm" title="Edit Data"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+														<a href=" {{ route('invoice.edit',$item->id) }} " class="btn btn-success sm" title="Edit Data"><i class="fa fa-pencil" aria-hidden="true"></i></a>
 														
-														<a href="{{ route('print.invoice',$item->id) }}" class="btn btn-danger sm" title="Print Invoice" >  <i class="fa fa-print"></i> </a>
+														<a href="{{ route('print.invoice',$item->id) }}" class="btn btn-info sm" title="Print Invoice" >  <i class="fa fa-print"></i> </a>
 														<a href="{{ route('invoice.delete',$item->id) }}" class="btn btn-danger sm" title="Delete Data" id="delete">  <i class="fas fa-trash-alt"></i> </a> 
 														
 														</td>

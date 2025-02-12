@@ -144,6 +144,27 @@ class PurchaseController extends Controller
 	 	return redirect()->back()->with($notification); 
 
 	 } // End Method
+	 
+	 
+	public function PrintPurchaseInvoice($id)
+	{
+		// Retrieve the purchase with supplier and details
+		$purchase = Purchase::with('supplier', 'purchaseDetails.product')
+			->findOrFail($id);
+
+		// Check if the purchase exists
+		if (!$purchase) {
+			$notification = array(
+				'message' => 'Purchase not found',
+				'alert-type' => 'error'
+			);
+			return redirect()->route('purchase.all')->with($notification);
+		}
+
+		// Pass data to a view for generating the PDF or displaying the invoice
+		return view('backend.pdf.print_purchase_invoice_pdf', compact('purchase'));
+	}
+
 
  
 	
