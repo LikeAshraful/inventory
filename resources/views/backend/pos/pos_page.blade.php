@@ -56,8 +56,9 @@
                                                         <option value="">Select Customer </option>
                                                         <option value="0">New Customer </option>
                                                         @foreach($customer as $cus)
-                                                                                            <option value="{{ $cus->id }}">{{ $cus->name }} -
-                                                            {{ $cus->mobile_no }}</option>
+                                                            <option value="{{ $cus->id }}">{{ $cus->name }} -
+                                                                {{ $cus->mobile_no }}
+                                                            </option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -87,8 +88,9 @@
                                                         class="form-select select2">
                                                         <option selected="">Open this select menu</option>
                                                         @foreach($product as $prod)
-                                                                            <option value="{{ $prod->id }}">{{ $prod->name }} -
-                                                            {{ $prod->product_code }}</option>
+                                                            <option value="{{ $prod->id }}">{{ $prod->name }} -
+                                                                {{ $prod->product_code }}
+                                                            </option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -150,7 +152,7 @@
                                                                 id="employee_id" aria-label="Salesman">
                                                                 <option value="" selected>Select Sales Man</option>
                                                                 @foreach($employee as $employees)
-                                                                                      <option value="{{ $employees->id }}" {{ (old('employee_id') == $employees->id || $employees->id == $loggedInUserId) ? 'selected' : '' }}>
+                                                                    <option value="{{ $employees->id }}" {{ (old('employee_id') == $employees->id || $employees->id == $loggedInUserId) ? 'selected' : '' }}>
                                                                         {{ $employees->name }}
                                                                     </option>
                                                                 @endforeach
@@ -346,7 +348,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach($product as $key => $item)
-                                                                <tr>
+                                        <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td> <img src="{{ asset($item->product_image) }}"
                                                     style="width:50px; height: 40px;"> </td>
@@ -384,7 +386,6 @@
 				<option value="sale" selected>Sale</option>
 				<option value="return">Return</option>
 			</select>
-
         </td>
         <td><input type="text" name="product_code[]" class="form-control" value="@{{product_code}}" readonly></td>
         <td><input type="text" name="product_name[]" class="form-control" value="@{{product_name}}" readonly></td>
@@ -622,9 +623,15 @@
         function appendProductToTable(productDetails) {
             var row = `
                 <tr>
-                    <td><input type="hidden" name="product_id[]" value="${productDetails.product_id}">${productDetails.product_id}</td>
-                    <td>${productDetails.product_code}</td>
-                    <td>${productDetails.name}</td>
+                    <input type="hidden" name="product_id[]" value="${productDetails.product_id}">
+                    <td>
+                        <select name="type[]" class="form-select transaction-type">
+                            <option value="sale" selected>Sale</option>
+                            <option value="return">Return</option>
+                        </select>
+                    </td>
+                    <td><input type="text" name="product_code[]" class="form-control" value="${productDetails.product_code}" readonly></td>
+                    <td><input type="text" name="product_name[]" class="form-control" value="${productDetails.name}" readonly></td>
                     <td><input type="number" name="quantity[]" class="form-control qty" min="1" value="1"></td>
                     <td><input type="number" name="price[]" class="form-control price" min="0" value="${productDetails.retail_sale}"></td>
                     <td><input type="number" name="total[]" class="form-control total" value="${productDetails.retail_sale}" readonly></td>
