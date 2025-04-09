@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Pos;
 
 use App\Http\Controllers\Controller;
@@ -15,14 +17,18 @@ class PaymentController extends Controller
 {
     public function showPaymentPage()
     {
-        $customers = Customer::all();
+        $customers = Customer::where('status', 1)
+            ->where('previous_due_amount', '>', 0)
+            ->orderBy('name')
+            ->get(['id', 'name', 'previous_due_amount']);
+
         return view('backend.payment.customer_payment_add', compact('customers'));
     }
 
     public function addPayment(Request $request)
     {
         DB::beginTransaction();
-        
+
         try {
             $request->validate([
                 'customer_id' => 'required|exists:customers,id',
@@ -76,7 +82,6 @@ class PaymentController extends Controller
                 'customer_due' => $customer->fresh()->previous_due_amount,
                 'customer_id' => $customer->id
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -89,9 +94,9 @@ class PaymentController extends Controller
     public function getCustomerInvoices($customerId)
     {
         $invoices = Invoice::where('customer_id', $customerId)
-                    ->where('due_amount', '>', 0)
-                    ->get(['id', 'invoice_no', 'due_amount']);
-        
+            ->where('due_amount', '>', 0)
+            ->get(['id', 'invoice_no', 'due_amount']);
+
         return response()->json($invoices);
     }
 
