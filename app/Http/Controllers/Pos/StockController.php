@@ -28,26 +28,23 @@ class StockController extends Controller
 
     } // End Method
 	
-	public function StockSupplierWise(){
+	public function StockCategoryWise(){
 		
         $supppliers = Supplier::all();
         $category = Category::all();
-        return view('backend.stock.supplier_product_wise_report',compact('supppliers','category'));
+        return view('backend.stock.category_product_wise_report',compact('supppliers','category'));
 		
     } // End Method
 	
-	public function SupplierWisePdf(Request $request){
-
-        $allData = Product::orderBy('supplier_id','asc')->orderBy('category_id','asc')->where('supplier_id',$request->supplier_id)->get();
-        return view('backend.pdf.supplier_wise_report_pdf',compact('allData'));
-
-    } // End Method
 	
-	public function ProductWisePdf(Request $request){
+public function CategoryWisePdf(Request $request)
+{
+    // Fetch all products under the selected category
+    $products = Product::where('category_id', $request->category_id)->get();
 
-        $product = Product::where('category_id',$request->category_id)->where('id',$request->product_id)->first();
-        return view('backend.pdf.product_wise_report_pdf',compact('product'));
-    } // End Method
+    // Pass the products to the view
+    return view('backend.pdf.category_wise_report_pdf', compact('products'));
+} // End Method
 
 	
 	

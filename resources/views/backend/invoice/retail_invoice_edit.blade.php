@@ -79,7 +79,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-1">
+                                        <div class="col-md-2">
                                             <div class="md-3">
                                                 <label for="current_stock_qty" class="form-label">Stock(Crnt)</label>
 
@@ -96,13 +96,7 @@
                                                     type="number" id="invoice_qty" value="{{ $invoice->quantity ?? 0 }}">
                                             </div>
                                         </div>
-                                        <div class="col-md-1" style="margin-top:30px;">
-                                            <div class="md-3">
-                                                <label for="addMoreButton" class="form-label"></label>
-                                                <i class="btn btn-secondary btn-rounded waves-effect waves-light addeventmore"
-                                                    id="addMoreButton">Add</i>
-                                            </div>
-                                        </div>
+                                        
                                     </div>
                                     <!-- end row -->
                                     <div class="row mt-3">
@@ -372,98 +366,98 @@
 
 
 
-            $(document).ready(function() {
-                //start of multiple products fetch area
-                $(document).on("click", ".addeventmore", function() {
-                    var product_id = $('#product_id').val();
-                    var invoice_qty = $('#invoice_qty').val();
-                    var selected_product_name = $('#product_id option:selected').text()
-                        .split('-')[0].trim();
+$(document).ready(function() {
+    // Trigger product addition when a product is selected
+    $(document).on("change", "#product_id", function() {
+        var product_id = $('#product_id').val();
+        var invoice_qty = $('#invoice_qty').val();
+        var selected_product_name = $('#product_id option:selected').text()
+            .split('-')[0].trim();
 
-                    if (product_id == '') {
-                        alert('Please select a product first.');
-                        return;
-                    }
+        if (product_id == '') {
+            alert('Please select a product first.');
+            return;
+        }
 
-                    if (!invoice_qty || invoice_qty <= 0) {
-                        invoice_qty = 1;
-                    }
+        if (!invoice_qty || invoice_qty <= 0) {
+            invoice_qty = 1;
+        }
 
-                    // Check if product already exists in the table
-                    var existingRow = null;
-                    $('#addRow tr').each(function() {
-                        if ($(this).find('input[name="product_id[]"]').val() ==
-                            product_id) {
-                            existingRow = $(this);
-                            return false; // Break the loop
-                        }
-                    });
+        // Check if product already exists in the table
+        var existingRow = null;
+        $('#addRow tr').each(function() {
+            if ($(this).find('input[name="product_id[]"]').val() ==
+                product_id) {
+                existingRow = $(this);
+                return false; // Break the loop
+            }
+        });
 
-                    if (existingRow) {
-                        // Update existing row
-                        existingRow.find('.qty').val(invoice_qty);
-                        var price = parseFloat(existingRow.find('.price').val()) || 0;
-                        var type = existingRow.find('.transaction-type').val();
+        if (existingRow) {
+            // Update existing row
+            existingRow.find('.qty').val(invoice_qty);
+            var price = parseFloat(existingRow.find('.price').val()) || 0;
+            var type = existingRow.find('.transaction-type').val();
 
-                        // Update total based on type
-                        if (type == 'return') {
-                            existingRow.find('.total').val(-(invoice_qty * price));
-                        } else {
-                            existingRow.find('.total').val(invoice_qty * price);
-                        }
-                    } else {
-                        // Add new row
-                        $.ajax({
-                            url: "{{ route('get-product-details') }}",
-                            type: "GET",
-                            data: {
-                                product_id: product_id
-                            },
-                            success: function(productDetails) {
-                                var data = {
-                                    product_id: product_id,
-                                    product_code: productDetails
-                                        .product_code,
-                                    product_name: selected_product_name,
-                                    retail_sale: productDetails
-                                        .retail_sale,
-                                };
+            // Update total based on type
+            if (type == 'return') {
+                existingRow.find('.total').val(-(invoice_qty * price));
+            } else {
+                existingRow.find('.total').val(invoice_qty * price);
+            }
+        } else {
+            // Add new row
+            $.ajax({
+                url: "{{ route('get-product-details') }}",
+                type: "GET",
+                data: {
+                    product_id: product_id
+                },
+                success: function(productDetails) {
+                    var data = {
+                        product_id: product_id,
+                        product_code: productDetails
+                            .product_code,
+                        product_name: selected_product_name,
+                        retail_sale: productDetails
+                            .retail_sale,
+                    };
 
-                                // Generate and append product row
-                                var source = $("#document-template").html();
-                                var template = Handlebars.compile(source);
-                                var html = template(data);
-                                $("#addRow").append(html);
+                    // Generate and append product row
+                    var source = $("#document-template").html();
+                    var template = Handlebars.compile(source);
+                    var html = template(data);
+                    $("#addRow").append(html);
 
-                                // Update the quantity in the new row
-                                var newRow = $('#addRow tr:last');
-                                newRow.find('.qty').val(invoice_qty);
-                                var price = parseFloat(newRow.find('.price')
-                                    .val()) || 0;
-                                newRow.find('.total').val(invoice_qty *
-                                    price);
+                    // Update the quantity in the new row
+                    var newRow = $('#addRow tr:last');
+                    newRow.find('.qty').val(invoice_qty);
+                    var price = parseFloat(newRow.find('.price')
+                        .val()) || 0;
+                    newRow.find('.total').val(invoice_qty *
+                        price);
 
-                                calculateTotal(); // Recalculate totals after adding new row
-                            },
-                            error: function() {
-                                $.notify(
-                                    "Failed to fetch product details", {
-                                        globalPosition: 'top right',
-                                        className: 'error'
-                                    });
-                            }
+                    calculateTotal(); // Recalculate totals after adding new row
+                },
+                error: function() {
+                    $.notify(
+                        "Failed to fetch product details", {
+                            globalPosition: 'top right',
+                            className: 'error'
                         });
-                    }
-
-                    // Reset product selection and quantity
-                    $('#product_id').val('').trigger('change');
-                    $('#invoice_qty').val('');
-                    $('#current_stock_qty').val('');
-
-                    // Recalculate totals
-                    calculateTotal();
-                });
+                }
             });
+        }
+
+        // Reset product selection and quantity
+        $('#product_id').val('').trigger('change.select2');
+        $('#invoice_qty').val('');
+        $('#current_stock_qty').val('');
+
+        // Recalculate totals
+        calculateTotal();
+    });
+});
             
 
 
@@ -487,44 +481,49 @@
                 calculateTotal();
             });
 
-            function calculateTotal() {
-                var totalAmount = 0;
-                var returnAmount = 0;
+    function calculateTotal() {
+		var totalAmount = 0;
+		var returnAmount = 0;
 
-                // Loop through each row and calculate totals
-                $('.total').each(function() {
-                    var row = $(this).closest('tr');
-                    var type = row.find('.transaction-type').val(); // Get the type (sale or return)
+		// Loop through each row and calculate totals
+		$('.total').each(function() {
+			var row = $(this).closest('tr');
+			var type = row.find('.transaction-type').val(); // Get the type (sale or return)
 
-                    if (type === 'return') {
-                        returnAmount += parseFloat($(this).val()) || 0; // Sum of return amounts (positive)
-                    } else {
-                        totalAmount += parseFloat($(this).val()) || 0; // Sum of sales amounts
-                    }
-                });
+			if (type === 'return') {
+				returnAmount += parseFloat($(this).val()) || 0; // Sum of return amounts (positive)
+			} else {
+				totalAmount += parseFloat($(this).val()) || 0; // Sum of sales amounts
+			}
+		});
 
-                // Convert returnAmount to positive if it’s negative
-                returnAmount = Math.abs(returnAmount);
+		// Convert returnAmount to positive if it’s negative
+		returnAmount = Math.abs(returnAmount);
 
-                var percentageDiscount = parseFloat($('#percentage_discount').val()) || 0;
-                var flatDiscount = parseFloat($('#flat_discount').val()) || 0;
-                var discount = flatDiscount > 0 ? flatDiscount : (totalAmount * percentageDiscount / 100);
+		var percentageDiscount = parseFloat($('#percentage_discount').val()) || 0;
+		var flatDiscount = parseFloat($('#flat_discount').val()) || 0;
 
-                var shipping = parseFloat($('#shipping').val()) || 0;
-                var labour = parseFloat($('#labour').val()) || 0;
-                var previousDue = parseFloat($('#previous_due_amount').val()) || 0;
-                var paidAmount = parseFloat($('#paid_amount').val()) || 0;
+		// Calculate percentage discount first
+		var discountFromPercentage = (totalAmount * percentageDiscount / 100);
 
-                // Correctly calculate payableAmount with returnAmount subtracted
-                var payableAmount = totalAmount - returnAmount - discount + shipping + labour;
-                var dueAmount = payableAmount - paidAmount;
+		// Apply flat discount after percentage discount
+		var totalDiscount = discountFromPercentage + flatDiscount;
 
-                // Set the values in the fields
-                $('#total_amount').val(totalAmount.toFixed(2)); // Show total amount
-                $('#return_amount').val(returnAmount.toFixed(2)); // Show return amount
-                $('#payable_amount').val(payableAmount.toFixed(2)); // Show payable amount
-                $('#due_amount').val(dueAmount.toFixed(2)); // Show due amount
-            }
+		var shipping = parseFloat($('#shipping').val()) || 0;
+		var labour = parseFloat($('#labour').val()) || 0;
+		var previousDue = parseFloat($('#previous_due_amount').val()) || 0;
+		var paidAmount = parseFloat($('#paid_amount').val()) || 0;
+
+		// Correctly calculate payableAmount with returnAmount subtracted
+		var payableAmount = totalAmount - returnAmount - totalDiscount + shipping + labour;
+		var dueAmount = payableAmount - paidAmount;
+
+		// Set the values in the fields
+		$('#total_amount').val(totalAmount.toFixed(2));  // Show total amount
+		$('#return_amount').val(returnAmount.toFixed(2)); // Show return amount
+		$('#payable_amount').val(payableAmount.toFixed(2));  // Show payable amount
+		$('#due_amount').val(dueAmount.toFixed(2));      // Show due amount
+	}
 
         $(document).on('input', '#percentage_discount, #flat_discount, #shipping, #labour, #paid_amount',
             function() {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pos;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use App\Models\Invoice;
 use Auth;
 use Illuminate\Support\Carbon;
 use Image;
@@ -144,4 +145,73 @@ class CustomerController extends Controller
         return redirect()->back()->with($notification);
 
     } // End Method
+	
+	
+	public function CustomerInvoiceReport()
+	{
+		// Fetch all customers for the dropdown
+		$customers = Customer::all();
+		return view('backend.customer.customer_invoice_report', compact('customers'));
+	}
+
+	public function CustomerReportPdf(Request $request)
+	{
+		// Validate the request
+		$request->validate([
+			'start_date' => 'required|date',
+			'end_date' => 'required|date|after_or_equal:start_date',
+			'customer_id' => 'required|exists:customers,id', // Ensure the customer exists
+		]);
+
+		// Format the dates
+		$sdate = date('Y-m-d', strtotime($request->start_date));
+		$edate = date('Y-m-d', strtotime($request->end_date));
+
+		// Fetch invoices for the selected customer within the date range
+		$allData = Invoice::with(['customer', 'sale_returns'])
+			->where('customer_id', $request->customer_id) // Filter by selected customer
+			->whereBetween('date', [$sdate, $edate])
+			->get();
+
+		// Pass data to the view
+		$start_date = $sdate;
+		$end_date = $edate;
+		return view('backend.pdf.customer_report_pdf', compact('allData', 'start_date', 'end_date'));
+	}
+	
+	public function CustomerProductReport(){
+		// Fetch all customers for the dropdown
+		$customers = Customer::all();
+		return view('backend.customer.customers_product_report', compact('customers'));
+    } // End Method
+	
+	public function CustomerProductPdf(Request $request)
+	{
+		// Validate the request
+		$request->validate([
+			'start_date' => 'required|date',
+			'end_date' => 'required|date|after_or_equal:start_date',
+			'customer_id' => 'required|exists:customers,id', // Ensure the customer exists
+		]);
+
+		// Format the dates
+		$sdate = date('Y-m-d', strtotime($request->start_date));
+		$edate = date('Y-m-d', strtotime($request->end_date));
+
+		// Fetch the selected customer
+		$customer = Customer::findOrFail($request->customer_id);
+
+		// Fetch invoices for the selected customer within the date range
+		$allData = Invoice::with(['customer', 'sale_returns', 'invoice_details'])
+			->where('customer_id', $request->customer_id) // Filter by selected customer
+			->whereBetween('date', [$sdate, $edate])
+			->get();
+
+		// Pass data to the view
+		$start_date = $sdate;
+		$end_date = $edate;
+		return view('backend.pdf.customer_product_pdf', compact('allData', 'start_date', 'end_date', 'customer'));
+	} // End Method
+	
+	
 }

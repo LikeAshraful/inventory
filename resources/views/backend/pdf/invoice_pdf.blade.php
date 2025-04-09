@@ -16,7 +16,7 @@
 												<div class="auth-logo">
 													<div class="logo logo-dark">
 														<span class="logo-lg">
-															<img src="{{asset('backend/assets/images/logo.png')}}" alt="" height="40">
+															<img src="{{asset('backend/assets/images/logo.png')}}" alt="" height="100">
 														</span>
 													</div>
 
@@ -28,34 +28,21 @@
 												</div>
 
 												<div class="text-center">
-													<h4 class="m-0 d-print-none">Al-faruk sleeping bag</h4>
+													<h2 class="m-0 d-print-none">Al-faruk sleeping bag</h2>
+													<h3 class="">Sales Invoice</h3>
 												</div>
 
 												<div>
-													<h4 class="m-0 d-print-none">Invoice barcode</h4>
+													
 												</div>
 											</div>
 
                                         </div>
             
-                                        <div class="row" style="padding-left: 20px;padding-right: 20px;">
+										<div class="row" style="padding-left: 20px;padding-right: 20px;">
 											<hr style="border: 1px solid #000; ">
-												<div class="col-md-4"></div>
+												<div class="col-md-12"></div>
 												<!-- end col -->
-												
-												<div class="col-md-3">
-													<div class=" text-center"style="font-size:25px;text-transform: uppercase;">
-														
-														<p><b>Invoice</b></p>
-														
-													</div>
-				
-												</div>
-												<!-- end col -->
-												
-												<div class="col-md-5"></div>
-												<!-- end col -->
-											 <hr style="border: 1px solid #000; ">   
                                         </div>
                                         <!-- end row -->
             

@@ -40,7 +40,7 @@
                                                         value="{{ $date }}">
                                                 </div>
                                             </div>
-                                            <div class="col-md-1">
+                                            <div class="col-md-2">
                                                 <div class="md-3">
                                                     <label for="example-text-input" class="form-label">Inv No</label>
                                                     <input class="form-control example-date-input" name="invoice_no"
@@ -88,14 +88,12 @@
                                                         class="form-select select2">
                                                         <option selected="">Open this select menu</option>
                                                         @foreach($product as $prod)
-                                                            <option value="{{ $prod->id }}">{{ $prod->name }} -
-                                                                {{ $prod->product_code }}
-                                                            </option>
+                                                            <option value="{{ $prod->id }}">{{ $prod->name }} - {{ $prod->product_code }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-1">
+                                            <div class="col-md-2">
                                                 <div class="md-3">
                                                     <label for="example-text-input"
                                                         class="form-label">Stock(Pic/Kg)</label>
@@ -104,13 +102,7 @@
                                                         readonly style="background-color:#ddd">
                                                 </div>
                                             </div>
-                                            <div class="col-md-2" style="margin-top:30px;">
-                                                <div class="md-3">
-                                                    <label for="addMoreButton" class="form-label"></label>
-                                                    <i class="btn btn-secondary btn-rounded waves-effect waves-light addeventmore"
-                                                        id="addMoreButton"> Add More</i>
-                                                </div>
-                                            </div>
+                                            
                                         </div>
                                         <!-- end row -->
                                         <div class="row mt-3">
@@ -380,12 +372,12 @@
 
 <script id="document-template" type="text/x-handlebars-template">
     <tr>
-		<input type="text" name="product_id[]" value="@{{product_id}}">
+        <input type="hidden" name="product_id[]" value="@{{product_id}}" />
         <td>
             <select name="type[]" class="form-select transaction-type">
-				<option value="sale" selected>Sale</option>
-				<option value="return">Return</option>
-			</select>
+                <option value="sale" selected>Sale</option>
+                <option value="return">Return</option>
+            </select>
         </td>
         <td><input type="text" name="product_code[]" class="form-control" value="@{{product_code}}" readonly></td>
         <td><input type="text" name="product_name[]" class="form-control" value="@{{product_name}}" readonly></td>
@@ -435,119 +427,107 @@
 
 
 
+		// Automatically add product to the table when selected
+	 $(document).on("change", "#product_id", function() {
+		var product_id = $('#product_id').val();
 
+		if (product_id == '') {
+			alert('Please select a product first.');
+			return;
+		}
 
+		$.ajax({
+			url: "{{ route('get-product-details') }}",
+			type: "GET",
+			data: { product_id: product_id },
+			success: function(productDetails) {
+				var data = {
+					product_id: productDetails.product_id,
+					product_code: productDetails.product_code,
+					product_name: $('#product_id option:selected').text(),
+					retail_sale: productDetails.retail_sale,
+				};
 
+				// Generate and append product row
+				var source = $("#document-template").html();
+				var template = Handlebars.compile(source);
+				var html = template(data);
+				$("#addRow").append(html);
 
-        //start of multiple products fetch area
-        $(document).on("click", ".addeventmore", function () {
-            var product_id = $('#product_id').val();
+				calculateTotal();
+			},
+			error: function() {
+				alert('Failed to fetch product details.');
+			}
+		});
+	});
 
-            if (product_id == '') {
-                alert('Please select a product first.');
-                return;
-            }
+    $(document).on('click', '.remove', function() {
+        $(this).closest('tr').remove();
+        calculateTotal();
+    });
 
-            $.ajax({
-                url: "{{ route('get-product-details') }}",
-                type: "GET",
-                data: { product_id: product_id },
-                success: function (productDetails) {
-                    var data = {
-                        product_id: productDetails.product_id,
-                        product_code: productDetails.product_code,
-                        product_name: $('#product_id option:selected').text(),
-                        retail_sale: productDetails.retail_sale,
-                    };
+    $(document).on('input', '.qty, .price, .transaction-type', function() {
+        var row = $(this).closest('tr');
+        var qty = parseFloat(row.find('.qty').val()) || 0;
+        var price = parseFloat(row.find('.price').val()) || 0;
+        var type = row.find('.transaction-type').val();
 
-                    // Append a hidden input for product_id
-                    var hiddenInput = `<input type="hidden" name="product_id[]" value="${data.product_id}" />`;
-                    $('#productForm').append(hiddenInput);
-
-                    // Generate and append product row
-                    var source = $("#document-template").html();
-                    var template = Handlebars.compile(source);
-                    var html = template(data);
-                    $("#addRow").append(html);
-
-                    calculateTotal();
-                },
-                error: function () {
-                    $.notify("Failed to fetch product details", {
-                        globalPosition: 'top right',
-                        className: 'error'
-                    });
-                }
-            });
-        });
-        //end of multiple products fetch area
-
-
-
-
-        $(document).on('click', '.remove', function () {
-            $(this).closest('tr').remove();
-            calculateTotal();
-        });
-
-        $(document).on('input', '.qty, .price, .transaction-type', function () {
-            var row = $(this).closest('tr');
-            var qty = parseFloat(row.find('.qty').val()) || 0;
-            var price = parseFloat(row.find('.price').val()) || 0;
-            var type = row.find('.transaction-type').val();
-
-            if (type == 'return') {
-                row.find('.total').val(-qty * price); // Return amount as negative
-            } else {
-                row.find('.total').val(qty * price); // Sale amount as positive
-            }
-            calculateTotal();
-        });
-
-        function calculateTotal() {
-            var totalAmount = 0;
-            var returnAmount = 0;
-
-            // Loop through each row and calculate totals
-            $('.total').each(function () {
-                var row = $(this).closest('tr');
-                var type = row.find('.transaction-type').val(); // Get the type (sale or return)
-
-                if (type === 'return') {
-                    returnAmount += parseFloat($(this).val()) || 0; // Sum of return amounts (positive)
-                } else {
-                    totalAmount += parseFloat($(this).val()) || 0; // Sum of sales amounts
-                }
-            });
-
-            // Convert returnAmount to positive if it’s negative
-            returnAmount = Math.abs(returnAmount);
-
-            var percentageDiscount = parseFloat($('#percentage_discount').val()) || 0;
-            var flatDiscount = parseFloat($('#flat_discount').val()) || 0;
-            var discount = flatDiscount > 0 ? flatDiscount : (totalAmount * percentageDiscount / 100);
-
-            var shipping = parseFloat($('#shipping').val()) || 0;
-            var labour = parseFloat($('#labour').val()) || 0;
-            var previousDue = parseFloat($('#previous_due_amount').val()) || 0;
-            var paidAmount = parseFloat($('#paid_amount').val()) || 0;
-
-            // Correctly calculate payableAmount with returnAmount subtracted
-            var payableAmount = totalAmount - returnAmount - discount + shipping + labour;
-            var dueAmount = payableAmount - paidAmount;
-
-            // Set the values in the fields
-            $('#total_amount').val(totalAmount.toFixed(2));  // Show total amount
-            $('#return_amount').val(returnAmount.toFixed(2)); // Show return amount
-            $('#payable_amount').val(payableAmount.toFixed(2));  // Show payable amount
-            $('#due_amount').val(dueAmount.toFixed(2));      // Show due amount
+        if (type == 'return') {
+            row.find('.total').val(-qty * price); // Return amount as negative
+        } else {
+            row.find('.total').val(qty * price); // Sale amount as positive
         }
+        calculateTotal();
+    });
 
+	function calculateTotal() {
+		var totalAmount = 0;
+		var returnAmount = 0;
 
+		// Loop through each row and calculate totals
+		$('.total').each(function() {
+			var row = $(this).closest('tr');
+			var type = row.find('.transaction-type').val(); // Get the type (sale or return)
 
-        $(document).on('input', '#percentage_discount, #flat_discount, #shipping, #labour, #paid_amount', function () {
-            calculateTotal();
-        });
+			if (type === 'return') {
+				returnAmount += parseFloat($(this).val()) || 0; // Sum of return amounts (positive)
+			} else {
+				totalAmount += parseFloat($(this).val()) || 0; // Sum of sales amounts
+			}
+		});
+
+		// Convert returnAmount to positive if it’s negative
+		returnAmount = Math.abs(returnAmount);
+
+		var percentageDiscount = parseFloat($('#percentage_discount').val()) || 0;
+		var flatDiscount = parseFloat($('#flat_discount').val()) || 0;
+
+		// Calculate percentage discount first
+		var discountFromPercentage = (totalAmount * percentageDiscount / 100);
+
+		// Apply flat discount after percentage discount
+		var totalDiscount = discountFromPercentage + flatDiscount;
+
+		var shipping = parseFloat($('#shipping').val()) || 0;
+		var labour = parseFloat($('#labour').val()) || 0;
+		var previousDue = parseFloat($('#previous_due_amount').val()) || 0;
+		var paidAmount = parseFloat($('#paid_amount').val()) || 0;
+
+		// Correctly calculate payableAmount with returnAmount subtracted
+		var payableAmount = totalAmount - returnAmount - totalDiscount + shipping + labour;
+		var dueAmount = payableAmount - paidAmount;
+
+		// Set the values in the fields
+		$('#total_amount').val(totalAmount.toFixed(2));  // Show total amount
+		$('#return_amount').val(returnAmount.toFixed(2)); // Show return amount
+		$('#payable_amount').val(payableAmount.toFixed(2));  // Show payable amount
+		$('#due_amount').val(dueAmount.toFixed(2));      // Show due amount
+	}
+
+    $(document).on('input', '#percentage_discount, #flat_discount, #shipping, #labour, #paid_amount', function() {
+        calculateTotal();
+    });
 
 
 

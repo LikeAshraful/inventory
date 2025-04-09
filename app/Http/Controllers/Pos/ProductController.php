@@ -17,7 +17,8 @@ use App\Imports\ProductImport;
 class ProductController extends Controller
 {
     public function ProductAll(){
-        $product = Product::latest()->get();
+		
+		$product = Product::with(['category', 'supplier', 'unit'])->get();
         return view('backend.product.product_all',compact('product'));
     } // End Method 
 
@@ -30,94 +31,125 @@ class ProductController extends Controller
         return view('backend.product.product_add',compact('supplier','category','unit'));
     } // End Method
 	
-	public function ProductStore(Request $request){
-    
+	public function ProductStore(Request $request) {
+		// Validate the request (only name and category_id are required)
+		$request->validate([
+			'name' => 'required|string|max:255',
+			'category_id' => 'required|integer',
+			'supplier_id' => 'nullable|integer',
+			'unit_id' => 'nullable|integer',
+			'quantity' => 'nullable|integer',
+			'product_code' => 'nullable|string|max:255',
+			'buying_price' => 'nullable|numeric',
+			'retail_sale' => 'nullable|numeric',
+			'wholesale' => 'nullable|numeric',
+			'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+		]);
 
-    // Check if image is uploaded
-    if ($request->file('product_image')) {
-        $image = $request->file('product_image');
-        $name_gen = hexdec(uniqid()).'.'.$image->getClientOriginalExtension();
-        Image::make($image)->resize(300,300)->save('upload/product/'.$name_gen);
-        $save_url = 'upload/product/'.$name_gen;
-    } else {
-        // Set default dummy image
-        $save_url = 'upload/no_image.jpg';
-    }
+		// Handle image upload
+		if ($request->file('product_image')) {
+			$image = $request->file('product_image');
+			$name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+			Image::make($image)->resize(300, 300)->save('upload/product/' . $name_gen);
+			$save_url = 'upload/product/' . $name_gen;
+		} else {
+			// Set default dummy image
+			$save_url = 'upload/no_image.jpg';
+		}
 
-    Product::insert([
-        'name' => $request->name,
-        'supplier_id' => $request->supplier_id,
-        'unit_id' => $request->unit_id,
-        'category_id' => $request->category_id,
-        'quantity' => $request->quantity,
-        'product_code' => $request->product_code,
-        'buying_date' => $request->buying_date,
-        'expire_date' => $request->expire_date,
-        'buying_price' => $request->buying_price,
-        'retail_sale' => $request->retail_sale,
-        'wholesale' => $request->wholesale,
-        'product_image' => $save_url,
-        'created_by' => Auth::user()->id,
-        'created_at' => Carbon::now(),
-    ]);
+		// Insert product with default values for optional fields
+		Product::insert([
+			'name' => $request->name,
+			'category_id' => $request->category_id,
+			'supplier_id' => $request->supplier_id ?? null, // Optional
+			'unit_id' => $request->unit_id ?? null,         // Optional
+			'quantity' => $request->quantity ?? 0,          // Default to 0 if not provided
+			'product_code' => $request->product_code ?? null, // Optional
+			'buying_date' => $request->buying_date ?? null,   // Optional
+			'expire_date' => $request->expire_date ?? null,   // Optional
+			'buying_price' => $request->buying_price ?? 0,    // Default to 0 if not provided
+			'retail_sale' => $request->retail_sale ?? 0,      // Default to 0 if not provided
+			'wholesale' => $request->wholesale ?? 0,          // Default to 0 if not provided
+			'product_image' => $save_url,
+			'created_by' => Auth::user()->id,
+			'created_at' => Carbon::now(),
+		]);
 
-    $notification = array(
-        'message' => 'Product Inserted Successfully',
-        'alert-type' => 'success'
-    );
+		// Notification for success
+		$notification = array(
+			'message' => 'Product Inserted Successfully',
+			'alert-type' => 'success'
+		);
 
-    return redirect()->route('product.all')->with($notification);
-} // End Method
+		return redirect()->route('product.all')->with($notification);
+	} // End Method
 
 	
-	public function ProductEdit($id){
-
-        $supplier = Supplier::all();
-        $category = Category::all();
-        $unit = Unit::all();
-        $product = Product::findOrFail($id);
-        return view('backend.product.product_edit',compact('product','supplier','category','unit'));
-    } // End Method 
+	public function ProductEdit($id) {
+		
+		$supplier = Supplier::all();
+		$category = Category::all();
+		$unit = Unit::all();
+		$product = Product::findOrFail($id);
+		return view('backend.product.product_edit', compact('product', 'supplier', 'category', 'unit'));
+	} // End Method
 	
-	public function ProductUpdate(Request $request){
-    $product_id = $request->id;
+	public function ProductUpdate(Request $request) {
+		$product_id = $request->id;
 
-    if ($request->file('product_image')) {
-        // Process the new image upload
-        $image = $request->file('product_image');
-        $name_gen = hexdec(uniqid()).'.'.$image->getClientOriginalExtension();
-        Image::make($image)->resize(300,300)->save('upload/product/'.$name_gen);
-        $save_url = 'upload/product/'.$name_gen;
-    } else {
-        // Retain the existing image
-        $product = Product::findOrFail($product_id);
-        $save_url = $product->product_image;
-    }
+		// Validate the request (only name and category_id are required)
+		$request->validate([
+			'name' => 'required|string|max:255',
+			'category_id' => 'required|integer',
+			'supplier_id' => 'nullable|integer',
+			'unit_id' => 'nullable|integer',
+			'quantity' => 'nullable|integer',
+			'product_code' => 'nullable|string|max:255',
+			'buying_price' => 'nullable|numeric',
+			'retail_sale' => 'nullable|numeric',
+			'wholesale' => 'nullable|numeric',
+			'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+		]);
 
-    Product::findOrFail($product_id)->update([
-        'name' => $request->name,
-        'supplier_id' => $request->supplier_id,
-        'unit_id' => $request->unit_id,
-        'category_id' => $request->category_id,
-		'quantity' => $request->quantity,
-        'product_code' => $request->product_code,
-        'buying_date' => $request->buying_date,
-        'expire_date' => $request->expire_date,
-        'buying_price' => $request->buying_price,
-        'retail_sale' => $request->retail_sale,
-        'wholesale' => $request->wholesale,
-        'product_image' => $save_url,
-        'updated_by' => Auth::user()->id,
-        'updated_at' => Carbon::now(),
-    ]);
+		// Handle image upload
+		if ($request->file('product_image')) {
+			// Process the new image upload
+			$image = $request->file('product_image');
+			$name_gen = hexdec(uniqid()) . '.' . $image->getClientOriginalExtension();
+			Image::make($image)->resize(300, 300)->save('upload/product/' . $name_gen);
+			$save_url = 'upload/product/' . $name_gen;
+		} else {
+			// Retain the existing image
+			$product = Product::findOrFail($product_id);
+			$save_url = $product->product_image;
+		}
 
-    $notification = array(
-        'message' => 'Product Updated Successfully',
-        'alert-type' => 'success'
-    );
+		// Update product with default values for optional fields
+		Product::findOrFail($product_id)->update([
+			'name' => $request->name,
+			'category_id' => $request->category_id,
+			'supplier_id' => $request->supplier_id ?? null, // Optional
+			'unit_id' => $request->unit_id ?? null,         // Optional
+			'quantity' => $request->quantity ?? 0,          // Default to 0 if not provided
+			'product_code' => $request->product_code ?? null, // Optional
+			'buying_date' => $request->buying_date ?? null,   // Optional
+			'expire_date' => $request->expire_date ?? null,   // Optional
+			'buying_price' => $request->buying_price ?? 0,    // Default to 0 if not provided
+			'retail_sale' => $request->retail_sale ?? 0,      // Default to 0 if not provided
+			'wholesale' => $request->wholesale ?? 0,          // Default to 0 if not provided
+			'product_image' => $save_url,
+			'updated_by' => Auth::user()->id,
+			'updated_at' => Carbon::now(),
+		]);
 
-    return redirect()->route('product.all')->with($notification);
-} // End Method
+		// Notification for success
+		$notification = array(
+			'message' => 'Product Updated Successfully',
+			'alert-type' => 'success'
+		);
+
+		return redirect()->route('product.all')->with($notification);
+	} // End Method
 
 	
 	public function ProductDelete($id){
