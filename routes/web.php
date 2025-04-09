@@ -14,6 +14,7 @@ use App\Http\Controllers\Pos\DefaultController;
 use App\Http\Controllers\Pos\InvoiceController;
 use App\Http\Controllers\Pos\StockController;
 use App\Http\Controllers\Pos\PosController;
+use App\Http\Controllers\Pos\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +63,12 @@ Route::controller(SupplierController::class)->group(function () {
 	Route::get('/supplier/edit/{id}', 'SupplierEdit')->name('supplier.edit');
 	Route::post('/supplier/update', 'SupplierUpdate')->name('supplier.update');
 	Route::get('/supplier/delete/{id}', 'SupplierDelete')->name('supplier.delete');
+	
+	Route::get('/supplier/invoice/report', 'SupplierInvoiceReport')->name('supplier.invoice.report');
+	Route::get('/supplier/report/pdf', 'SupplierReportPdf')->name('supplier.report.pdf');
+	
+	Route::get('/supplier/product/report', 'SupplierProductReport')->name('supplier.product.report');
+	Route::get('/supplier/product/pdf', 'SupplierProductPdf')->name('supplier.product.pdf');
 
 });
 
@@ -73,6 +80,13 @@ Route::controller(CustomerController::class)->group(function () {
 	Route::get('/customer/edit/{id}', 'CustomerEdit')->name('customer.edit');
     Route::post('/update/customer/{id}', 'CustomerUpdate')->name('customer.update');
 	Route::get('/customer/delete/{id}', 'CustomerDelete')->name('customer.delete');
+	
+	
+	Route::get('/customer/invoice/report', 'CustomerInvoiceReport')->name('customer.invoice.report');
+	Route::get('/customer/report/pdf', 'CustomerReportPdf')->name('customer.report.pdf');
+	
+	Route::get('/customer/product/report', 'CustomerProductReport')->name('customer.product.report');
+	Route::get('/customer/product/pdf', 'CustomerProductPdf')->name('customer.product.pdf');
 
 });
 
@@ -131,14 +145,19 @@ Route::controller(ProductController::class)->group(function () {
     Route::get('/purchase/add', 'PurchaseAdd')->name('purchase.add');
 	Route::post('/purchase/store', 'PurchaseStore')->name('purchase.store');
 	Route::get('/purchase/edit/{id}', 'PurchaseEdit')->name('purchase.edit');
-    Route::post('/purchase/update/{id}', 'PurchaseUpdate')->name('purchase.update');
+    Route::put('/purchase/update/{id}', 'PurchaseUpdate')->name('purchase.update');
 	Route::get('/purchase/delete/{id}', 'PurchaseDelete')->name('purchase.delete');
 	
 	Route::get('/print/purchase/invoice/{id}', 'PrintPurchaseInvoice')->name('print.purchaseinvoice');
 	
-
-
+	Route::get('/purchase/invoice/report', 'PurchaseInvoiceReport')->name('purchase.invoice.report');
+	Route::get('/purchase/report/pdf', 'PurchaseReportPdf')->name('purchase.report.pdf');
+	
+	Route::get('/purchase/product/report', 'PurchaseProductReport')->name('purchase.product.report');
+	Route::get('/purchase/product/pdf', 'PurchaseProductPdf')->name('purchase.product.pdf');
+	
 });
+
 // Sale All Route 
 	Route::controller(InvoiceController::class)->group(function () {
     Route::get('/invoice/all', 'InvoiceAll')->name('invoice.all'); 
@@ -159,11 +178,15 @@ Route::controller(ProductController::class)->group(function () {
     Route::post('/wholesale/store', 'WholesaleStore')->name('wholesale.store');
 	
 	
-    
-	
 	Route::get('/invoice/delete/{id}', 'InvoiceDelete')->name('invoice.delete');
 	
 	Route::get('/print/invoice/{id}', 'PrintInvoice')->name('print.invoice');
+	
+	Route::get('/sales/invoice/report', 'SalesInvoiceReport')->name('sales.invoice.report');
+	Route::get('/sales/report/pdf', 'SalesReportPdf')->name('sales.report.pdf');
+	
+	Route::get('/sales/product/report', 'SalesProductReport')->name('sales.product.report');
+	Route::get('/sales/product/pdf', 'SalesProductPdf')->name('sales.product.pdf');
 
 });
 
@@ -184,9 +207,8 @@ Route::controller(StockController::class)->group(function () {
 	
 	Route::get('/stock/report', 'StockReport')->name('stock.report'); 
 	Route::get('/stock/report/pdf', 'StockReportPdf')->name('stock.report.pdf'); 
-	Route::get('/stock/supplier/wise', 'StockSupplierWise')->name('stock.supplier.wise'); 
-	Route::get('/supplier/wise/pdf', 'SupplierWisePdf')->name('supplier.wise.pdf');
-	Route::get('/product/wise/pdf', 'ProductWisePdf')->name('product.wise.pdf');
+	Route::get('/stock/category/wise', 'StockCategoryWise')->name('stock.category.wise'); 
+	Route::get('/category/wise/pdf', 'CategoryWisePdf')->name('category.wise.pdf');
 	
 	
 	Route::get('/get-category', 'GetCategory')->name('get-category'); 
@@ -208,6 +230,15 @@ Route::controller(PosController::class)->group(function(){
 	Route::get('/possale','PosSale')->name('pos.sale');
 	Route::post('/possale/store', 'PosSaleStore')->name('possale.store');
 
+});
+
+
+///payment All Route
+Route::controller(PaymentController::class)->group(function(){
+    Route::get('/customer/payment', 'showPaymentPage')->name('customer.payment');
+    Route::post('/customer/payment/store', 'addPayment')->name('customer.payment.store');
+    Route::get('/get-customer-invoices/{customerId}', 'getCustomerInvoices');
+    Route::get('/get-customer-details/{customerId}', 'getCustomerDetails');
 });
 
 

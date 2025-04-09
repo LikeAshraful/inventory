@@ -10,6 +10,8 @@
                 <div class="card mt-3">
                     <form method="POST" action="{{ route('purchase.update', $purchase->id) }}">
                         @csrf
+						@method('PUT')
+                        <input type="hidden" name="previous_due_amount" id="previous_due_amount" value="{{ $purchase->due_amount }}">
                         <div class="card-body">
                             <h4 class="card-title">Edit Purchase Entry</h4><br><br>
 
@@ -69,12 +71,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
-                                    <div class="md-3">
-                                        <label for="addMoreButton" class="form-label" style="margin-top:44px;"></label>
-                                        <i class="btn btn-secondary btn-rounded waves-effect waves-light fas fa-plus-circle addeventmore" id="addMoreButton"> Add More</i>
-                                    </div>
-                                </div>
+                                
                             </div> <!-- end row -->
 
                         </div>
@@ -175,7 +172,7 @@ $(document).ready(function(){
         return 'PN' + Date.now();
     }
 
-    $(document).on("click", ".addeventmore", function(){
+    $(document).on("change", "#product_id", function(){
         var date = $('#date').val();
         var purchase_no = $('#purchase_no').val();
         var product_id = $('#product_id').val();
@@ -217,6 +214,8 @@ $(document).ready(function(){
                 var html = template(data);
                 $("#addRow").append(html);
                 calculateTotal();
+				
+				
             }
         });
     });

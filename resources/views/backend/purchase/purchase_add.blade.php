@@ -63,18 +63,13 @@
                                         <select name="product_id" id="product_id" class="form-select select2">
                                             <option selected="">Open this select menu</option>
                                             @foreach($product as $prod)
-                                                <option value="{{ $prod->id }}">{{ $prod->name }}</option>
+												<option value="{{ $prod->id }}">{{ $prod->name }} - {{ $prod->product_code }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
-                                    <div class="md-3">
-                                        <label for="addMoreButton" class="form-label" style="margin-top:44px;"></label>
-                                        <i class="btn btn-secondary btn-rounded waves-effect waves-light fas fa-plus-circle addeventmore" id="addMoreButton"> Add More</i>
-                                    </div>
-                                </div>
+                                
                             </div> <!-- end row -->
 
                         </div>
@@ -162,7 +157,8 @@ $(document).ready(function(){
         return 'PN' + Date.now();
     }
 
-    $(document).on("click", ".addeventmore", function(){
+    // Automatically add product to the table when selected
+    $(document).on("change", "#product_id", function(){
         var date = $('#date').val();
         var purchase_no = $('#purchase_no').val();
         var product_id = $('#product_id').val();
@@ -192,7 +188,6 @@ $(document).ready(function(){
                     date: date,
                     purchase_no: purchase_no,
                     product_id: product_id,
-                    
                     product_name: product_name,
                     product_code: productDetails.product_code,
                     expire_date: '',
@@ -219,29 +214,27 @@ $(document).ready(function(){
     });
 
     function calculateTotal() {
-    var sum = 0; // For subtotal of all products
-    $('.buying_price').each(function() {
-        var qty = $(this).closest('tr').find('.buying_qty').val();
-        var total = $(this).val() * qty;
-        $(this).closest('tr').find('.total_amount').val(total);
-        sum += total; // Accumulate the product's total into the subtotal
-    });
+        var sum = 0; // For subtotal of all products
+        $('.buying_price').each(function() {
+            var qty = $(this).closest('tr').find('.buying_qty').val();
+            var total = $(this).val() * qty;
+            $(this).closest('tr').find('.total_amount').val(total);
+            sum += total; // Accumulate the product's total into the subtotal
+        });
 
-    // Display the subtotal in the respective field
-    $('#subtotal').val(sum.toFixed(2));
+        // Display the subtotal in the respective field
+        $('#subtotal').val(sum.toFixed(2));
 
-    // Retrieve and calculate other fields
-    var discount_amount = parseFloat($('#discount_amount').val()) || 0;
-    var shipping = parseFloat($('#shipping').val()) || 0;
-    var total_amount = sum - discount_amount + shipping; // Final total
-    $('#estimated_amount').val(total_amount.toFixed(2));
+        // Retrieve and calculate other fields
+        var discount_amount = parseFloat($('#discount_amount').val()) || 0;
+        var shipping = parseFloat($('#shipping').val()) || 0;
+        var total_amount = sum - discount_amount + shipping; // Final total
+        $('#estimated_amount').val(total_amount.toFixed(2));
 
-    var paid_amount = parseFloat($('#paid_amount').val()) || 0;
-    var due_amount = total_amount - paid_amount; // Calculate due
-    $('#due_amount').val(due_amount.toFixed(2));
-	
-	}
-
+        var paid_amount = parseFloat($('#paid_amount').val()) || 0;
+        var due_amount = total_amount - paid_amount; // Calculate due
+        $('#due_amount').val(due_amount.toFixed(2));
+    }
 });
 </script>
 @endsection

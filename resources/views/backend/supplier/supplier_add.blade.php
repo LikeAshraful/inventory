@@ -1,7 +1,7 @@
 @extends('admin_dashboard')
 @section('admin')
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 
 <div class="page-content">
 	<div class="container-fluid">
@@ -18,9 +18,9 @@
 							<div class="row">
 								<div class="col-md-6">
 									<div class="row">
-										<label for="example-text-input" class="col-sm-2 col-form-label">Supplier Shop Name</label>
+										<label for="shopname" class="col-sm-2 col-form-label">Supplier Shop Name</label>
 										<div class="col-sm-10">
-											<input name="shopname" class="form-control" type="text"    >
+											<input name="shopname" id="shopname" class="form-control" type="text"    >
 										</div>
 									</div>
 								</div>
@@ -28,9 +28,9 @@
 								
 								<div class="col-md-6">
 									<div class="row">
-										<label for="example-text-input" class="col-sm-2 col-form-label">Name</label>
+										<label for="name" class="col-sm-2 col-form-label">Name</label>
 										<div class="col-sm-10">
-											<input name="name" class="form-control" type="text">
+											<input name="name" id="name" class="form-control" type="text">
 										</div>
 									</div>
 								</div>
@@ -38,9 +38,9 @@
 
 								<div class="col-md-6">
 									<div class="row mb-3">
-										<label for="example-text-input" class="col-sm-2 col-form-label">Email </label>
+										<label for="email" class="col-sm-2 col-form-label">Email </label>
 										<div class="col-sm-10">
-											<input name="email" class="form-control" type="email">
+											<input name="email" id="email" class="form-control" type="email">
 										</div>
 									</div>
 								</div>
@@ -48,9 +48,9 @@
 								
 								<div class="col-md-6">
 									<div class="row mb-3">
-										<label for="example-text-input" class="col-sm-2 col-form-label">Phone</label>
+										<label for="mobile_no" class="col-sm-2 col-form-label">Phone</label>
 										<div class="col-sm-10">
-											<input name="mobile_no" class="form-control" type="text">
+											<input name="mobile_no" id="mobile_no" class="form-control" type="text">
 										</div>
 									</div>
 								</div>
@@ -58,9 +58,9 @@
 
 								<div class="col-md-6">
 									<div class="row mb-3">
-										<label for="example-text-input" class="col-sm-2 col-form-label">Address</label>
+										<label for="address" class="col-sm-2 col-form-label">Address</label>
 										<div class="col-sm-10">
-											<input name="address" class="form-control" type="text">
+											<input name="address" id="address" class="form-control" type="text">
 										</div>
 									</div>
 								</div>
@@ -68,9 +68,9 @@
 								
 								<div class="col-md-6">
 									<div class="row mb-3">
-										<label for="example-text-input" class="col-sm-2 col-form-label">Opening Balance</label>
+										<label for="balance" class="col-sm-2 col-form-label">Opening Balance</label>
 										<div class="col-sm-10">
-											<input name="balance" class="form-control" type="text"  >
+											<input name="balance" id="balance" class="form-control" type="text"  >
 										</div>
 									</div>
 								</div>

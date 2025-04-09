@@ -45,7 +45,7 @@
 
                         <ul id="side-menu">
 
-                            <li class="menu-title">Navigation</li>
+                            
                 
                             <li>
                                 <a href="{{url('/dashboard')}}">
@@ -53,12 +53,10 @@
                                     <span> Dashboards </span>
                                 </a>
                             </li>
-
-                            <li class="menu-title mt-2">Accounts</li>
-
+							
                             <li>
                                 <a href="#supplier" data-bs-toggle="collapse">
-                                    <i class="mdi mdi-cart-outline"></i>
+                                    <i class="material-symbols-outlined">local_shipping</i>
                                     <span> Supplier </span>
                                     <span class="menu-arrow"></span>
                                 </a>
@@ -70,13 +68,19 @@
                                         <li>
                                             <a href="{{ route('supplier.all') }}">Supplier Details</a>
                                         </li>
+										<li>
+                                            <a href="{{ route('supplier.invoice.report') }}">Supplier Invoice Report</a>
+                                        </li>
+										<li>
+                                            <a href="{{ route('supplier.product.report') }}">Supplier Product Report</a>
+                                        </li>
                                     </ul>
                                 </div>
                             </li>
 							
 							<li>
                                 <a href="#customer" data-bs-toggle="collapse">
-                                    <i class="mdi mdi-cart-outline"></i>
+                                    <i class="material-symbols-outlined">groups</i>
                                     <span> Customer </span>
                                     <span class="menu-arrow"></span>
                                 </a>
@@ -88,6 +92,13 @@
                                         <li>
                                             <a href="{{ route('customer.all') }}">Customer Details</a>
                                         </li>
+										<li>
+                                            <a href="{{ route('customer.invoice.report') }}">Customer Invoice Report</a>
+                                        </li>
+										<li>
+                                            <a href="{{ route('customer.product.report') }}">Customer Product Report</a>
+                                        </li>
+										
                                     </ul>
                                 </div>
                             </li>
@@ -112,7 +123,7 @@
 							
 							<li>
                                 <a href="#category" data-bs-toggle="collapse">
-                                    <i class="mdi mdi-cart-outline"></i>
+                                    <i class="material-symbols-outlined">category</i>
                                     <span> Category </span>
                                     <span class="menu-arrow"></span>
                                 </a>
@@ -130,7 +141,7 @@
 							
 							<li>
                                 <a href="#product" data-bs-toggle="collapse">
-                                    <i class="mdi mdi-cart-outline"></i>
+                                    <i class="material-symbols-outlined">view_in_ar</i>
                                     <span> Product </span>
                                     <span class="menu-arrow"></span>
                                 </a>
@@ -152,13 +163,13 @@
 							<li>
                                 <a href="#stock" data-bs-toggle="collapse">
                                     <i class="mdi mdi-cart-outline"></i>
-                                    <span> Manage Stock </span>
+                                    <span>Stock</span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="stock">
                                     <ul class="nav-second-level">
                                         <li><a href="{{ route('stock.report') }}">Stock Report</a></li>
-										<li><a href="{{ route('stock.supplier.wise') }}">Supplier / Product Wise </a></li>
+										<li><a href="{{ route('stock.category.wise') }}">Category Wise Report</a></li>
 										<li><a href="{{ route('damage.add') }}">Add Damage / Lost</a></li>
                                     </ul>
                                 </div>
@@ -166,7 +177,7 @@
 							
 							<li>
                                 <a href="#purchase" data-bs-toggle="collapse">
-                                    <i class="mdi mdi-cart-outline"></i>
+                                    <i class="material-symbols-outlined">hourglass_bottom</i>
                                     <span> Purchase </span>
                                     <span class="menu-arrow"></span>
                                 </a>
@@ -175,8 +186,17 @@
                                         <li>
                                             <a href="{{ route('purchase.add') }}">Purchase Entry</a>
                                         </li>
+										
                                         <li>
                                             <a href="{{ route('purchase.all') }}">Purchase Details</a>
+                                        </li>
+										
+										<li>
+                                            <a href="{{ route('purchase.invoice.report') }}">Purchase Invoice Report</a>
+                                        </li>
+										
+										<li>
+                                            <a href="{{ route('purchase.product.report') }}">Purchase Product Report</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -203,7 +223,11 @@
                                         </li>
 										
 										<li>
-                                            <a href="#">Sales Return</a>
+                                            <a href="{{ route('sales.invoice.report') }}">Sales Invoice Report</a>
+                                        </li>
+										
+										<li>
+                                            <a href="{{ route('sales.product.report') }}">Sales Product Report</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -211,7 +235,7 @@
 							
 							<li>
                                 <a href="#employee" data-bs-toggle="collapse">
-                                    <i class="mdi mdi-cart-outline"></i>
+                                    <i class="material-symbols-outlined">group</i>
                                     <span> Employee </span>
                                     <span class="menu-arrow"></span>
                                 </a>
@@ -223,6 +247,21 @@
                                         <li>
                                             <a href="{{ route('all.employee') }}">Employee Details</a>
                                         </li>
+                                    </ul>
+                                </div>
+                            </li>	
+							<li>
+                                <a href="#payment" data-bs-toggle="collapse">
+                                    <i class="material-symbols-outlined">group</i>
+                                    <span> Payment </span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="payment">
+                                    <ul class="nav-second-level">
+                                        <li>
+                                            <a href="{{ route('customer.payment') }}">Customer Payment</a>
+                                        </li>
+                                        
                                     </ul>
                                 </div>
                             </li>

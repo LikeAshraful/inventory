@@ -26,8 +26,6 @@
 													<th>Image</th>
 													<th>Name</th>
 													<th>Category</th>
-													<th>Supplier Name </th>
-													<th>Unit</th>
 													<th>Code</th>
 													<th>Buying Price</th>
 													<th>Selling Price</th>
@@ -44,9 +42,7 @@
 												<td> {{ $key+1}} </td>
 												<td> <img src="{{ asset($item->product_image) }}" style="width:50px; height: 40px;"> </td>
 												<td> {{ $item->name }} </td> 
-												<td> {{ $item['category']['name'] }} </td> 
-												<td> {{ $item['supplier']['name'] }} </td> 
-												<td> {{ $item['unit']['name'] }} </td> 
+												 <td> {{ $item['category']['name'] ?? 'N/A' }} </td>
 												<td>{{ $item->product_code }}</td>
 												<td>{{ $item->buying_price }}</td>
 												<td>{{ $item->retail_sale }}</td>

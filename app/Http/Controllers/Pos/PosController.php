@@ -41,7 +41,7 @@ class PosController extends Controller
 
         return view('backend.pos.pos_page', compact('customer', 'product', 'employee', 'invoice_no', 'date'));
 
-    } 
+    } // End Method
 
 
 	public function PosSaleStore(Request $request) {

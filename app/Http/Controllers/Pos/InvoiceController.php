@@ -253,176 +253,176 @@ class InvoiceController extends Controller {
         DB::beginTransaction();
 
         try {
-            $invoice          = Invoice::findOrFail($invoiceId);
-            $originalCustomer = $invoice->customer;
-            $originalDue      = $invoice->due_amount;
+				$invoice          = Invoice::findOrFail($invoiceId);
+				$originalCustomer = $invoice->customer;
+				$originalDue      = $invoice->due_amount;
 
-            $request->validate([
-                'product_id'   => 'required|array',
-                'type'         => 'required|array',
-                'product_code' => 'required|array',
-                'product_name' => 'required|array',
-                'quantity'     => 'required|array',
-                'price'        => 'required|array',
-                'total'        => 'required|array',
-                'customer_id'  => 'required|integer|min:0',
-            ]);
+				$request->validate([
+					'product_id'   => 'required|array',
+					'type'         => 'required|array',
+					'product_code' => 'required|array',
+					'product_name' => 'required|array',
+					'quantity'     => 'required|array',
+					'price'        => 'required|array',
+					'total'        => 'required|array',
+					'customer_id'  => 'required|integer|min:0',
+				]);
 
-            $newCustomer   = null;
-            $isNewCustomer = $request->customer_id == 0;
+				$newCustomer   = null;
+				$isNewCustomer = $request->customer_id == 0;
 
-            if ($isNewCustomer) {
-                // Create new customer
-                $newCustomer = Customer::create([
-                    'shopname'            => $request->shopname,
-                    'name'                => $request->name,
-                    'mobile_no'           => $request->mobile_no,
-                    'previous_due_amount' => $request->due_amount, // Initial due from this invoice
-                ]);
-            } else {
-                // Fetch existing customer
-                $newCustomer = Customer::find($request->customer_id);
+				if ($isNewCustomer) {
+					// Create new customer
+					$newCustomer = Customer::create([
+						'shopname'            => $request->shopname,
+						'name'                => $request->name,
+						'mobile_no'           => $request->mobile_no,
+						'previous_due_amount' => $request->due_amount, // Initial due from this invoice
+					]);
+				} else {
+					// Fetch existing customer
+					$newCustomer = Customer::find($request->customer_id);
 
-                if (!$newCustomer) {
-                    throw new \Exception("Customer not found.");
-                }
+					if (!$newCustomer) {
+						throw new \Exception("Customer not found.");
+					}
 
-            }
+				}
 
-            if ($originalCustomer->id != $newCustomer->id) {
-                // Deduct original due from old customer
-                $originalCustomer->previous_due_amount -= $originalDue;
-                $originalCustomer->save();
+				if ($originalCustomer->id != $newCustomer->id) {
+					// Deduct original due from old customer
+					$originalCustomer->previous_due_amount -= $originalDue;
+					$originalCustomer->save();
 
-                if (!$isNewCustomer) {
-                    $newCustomer->previous_due_amount += $request->due_amount;
-                    $newCustomer->save();
-                }
+					if (!$isNewCustomer) {
+						$newCustomer->previous_due_amount += $request->due_amount;
+						$newCustomer->save();
+					}
 
-            } else {
-                $delta = $request->due_amount - $originalDue;
-                $newCustomer->previous_due_amount += $delta;
-                $newCustomer->save();
-            }
+				} else {
+					$delta = $request->due_amount - $originalDue;
+					$newCustomer->previous_due_amount += $delta;
+					$newCustomer->save();
+				}
 
-            $originalDetails = InvoiceDetail::where('invoice_id', $invoice->id)->get();
+				$originalDetails = InvoiceDetail::where('invoice_id', $invoice->id)->get();
 
-            foreach ($originalDetails as $detail) {
-                $product = Product::find($detail->product_id);
+				foreach ($originalDetails as $detail) {
+					$product = Product::find($detail->product_id);
 
-                if ($product) {
+					if ($product) {
 
-                    if ($detail->type === 'sale') {
-                        $product->increment('quantity', $detail->quantity);
-                    } elseif ($detail->type === 'return') {
-                        $product->decrement('quantity', $detail->quantity);
-                    }
+						if ($detail->type === 'sale') {
+							$product->increment('quantity', $detail->quantity);
+						} elseif ($detail->type === 'return') {
+							$product->decrement('quantity', $detail->quantity);
+						}
 
-                }
+					}
 
-            }
+				}
 
-            InvoiceDetail::where('invoice_id', $invoice->id)->delete();
-            SaleReturn::where('invoice_id', $invoice->id)->delete();
+				InvoiceDetail::where('invoice_id', $invoice->id)->delete();
+				SaleReturn::where('invoice_id', $invoice->id)->delete();
 
-            $invoice->update([
-                'invoice_no'          => $request->invoice_no,
-                'date'                => $request->date,
-                'comment'             => $request->comment,
-                'employee_id'         => $request->employee_id,
-                'customer_id'         => $isNewCustomer ? $newCustomer->id : $request->customer_id,
-                'total_amount'        => $request->total_amount,
-                'percentage_discount' => $request->percentage_discount,
-                'flat_discount'       => $request->flat_discount,
-                'shipping'            => $request->shipping,
-                'labour'              => $request->labour,
-                'payable_amount'      => $request->payable_amount,
-                'status'              => $request->status,
-                'due_amount'          => $request->due_amount,
-                'previous_due_amount' => $newCustomer->previous_due_amount,
-            ]);
+				$invoice->update([
+					'invoice_no'          => $request->invoice_no,
+					'date'                => $request->date,
+					'comment'             => $request->comment,
+					'employee_id'         => $request->employee_id,
+					'customer_id'         => $isNewCustomer ? $newCustomer->id : $request->customer_id,
+					'total_amount'        => $request->total_amount,
+					'percentage_discount' => $request->percentage_discount,
+					'flat_discount'       => $request->flat_discount,
+					'shipping'            => $request->shipping,
+					'labour'              => $request->labour,
+					'payable_amount'      => $request->payable_amount,
+					'status'              => $request->status,
+					'due_amount'          => $request->due_amount,
+					'previous_due_amount' => $newCustomer->previous_due_amount,
+				]);
 
-            foreach ($request->product_id as $key => $productId) {
-                $quantity = $request->quantity[$key] ?? 0;
-                $type     = strtolower($request->type[$key] ?? '');
+				foreach ($request->product_id as $key => $productId) {
+					$quantity = $request->quantity[$key] ?? 0;
+					$type     = strtolower($request->type[$key] ?? '');
 
-                InvoiceDetail::create([
-                    'invoice_id'   => $invoice->id,
-                    'product_id'   => $productId,
-                    'product_code' => $request->product_code[$key],
-                    'product_name' => $request->product_name[$key],
-                    'type'         => $type,
-                    'quantity'     => $quantity,
-                    'price'        => $request->price[$key],
-                    'total'        => $request->total[$key],
-                ]);
+					InvoiceDetail::create([
+						'invoice_id'   => $invoice->id,
+						'product_id'   => $productId,
+						'product_code' => $request->product_code[$key],
+						'product_name' => $request->product_name[$key],
+						'type'         => $type,
+						'quantity'     => $quantity,
+						'price'        => $request->price[$key],
+						'total'        => $request->total[$key],
+					]);
 
-                if ($productId && $quantity > 0) {
-                    $product = Product::find($productId);
+					if ($productId && $quantity > 0) {
+						$product = Product::find($productId);
 
-                    if ($product) {
+						if ($product) {
 
-                        if ($type === 'sale') {
-                            $product->decrement('quantity', $quantity);
-                        } elseif ($type === 'return') {
-                            $product->increment('quantity', $quantity);
-                        }
+							if ($type === 'sale') {
+								$product->decrement('quantity', $quantity);
+							} elseif ($type === 'return') {
+								$product->increment('quantity', $quantity);
+							}
 
-                    }
+						}
 
-                }
+					}
 
-            }
+				}
 
-            $payment = Payment::where('invoice_id', $invoice->id)->first();
+				$payment = Payment::where('invoice_id', $invoice->id)->first();
 
-            if ($payment) {
-                $payment->update([
-                    'customer_id' => $isNewCustomer ? $newCustomer->id : $request->customer_id,
-                    'paid_amount' => $request->paid_amount,
-                    'due_amount'  => $request->due_amount,
-                ]);
+				if ($payment) {
+					$payment->update([
+						'customer_id' => $isNewCustomer ? $newCustomer->id : $request->customer_id,
+						'paid_amount' => $request->paid_amount,
+						'due_amount'  => $request->due_amount,
+					]);
 
-                // Update payment details
-                $paymentDetail = PaymentDetail::where('payment_id', $payment->id)->first();
+					// Update payment details
+					$paymentDetail = PaymentDetail::where('payment_id', $payment->id)->first();
 
-                if ($paymentDetail) {
-                    $paymentDetail->update([
-                        'paid_amount'      => $request->paid_amount,
-                        'transaction_type' => $request->transaction_type,
-                    ]);
-                }
+					if ($paymentDetail) {
+						$paymentDetail->update([
+							'paid_amount'      => $request->paid_amount,
+							'transaction_type' => $request->transaction_type,
+						]);
+					}
 
-            }
+				}
 
-            foreach ($request->type as $key => $type) {
+				foreach ($request->type as $key => $type) {
 
-                if (strtolower($type) === 'return') {
-                    SaleReturn::create([
-                        'invoice_id'   => $invoice->id,
-                        'product_id'   => $request->product_id[$key],
-                        'product_code' => $request->product_code[$key],
-                        'product_name' => $request->product_name[$key],
-                        'quantity'     => $request->quantity[$key],
-                        'price'        => $request->price[$key],
-                        'total'        => $request->total[$key],
-                    ]);
-                }
+					if (strtolower($type) === 'return') {
+						SaleReturn::create([
+							'invoice_id'   => $invoice->id,
+							'product_id'   => $request->product_id[$key],
+							'product_code' => $request->product_code[$key],
+							'product_name' => $request->product_name[$key],
+							'quantity'     => $request->quantity[$key],
+							'price'        => $request->price[$key],
+							'total'        => $request->total[$key],
+						]);
+					}
 
-            }
+				}
 
-            DB::commit();
+				DB::commit();
 
-            $notification = [
-                'message'    => 'Invoice updated successfully.',
-                'alert-type' => 'success',
-            ];
-            return redirect()->route('print.invoice', ['id' => $invoice->id])->with($notification);
+				$notification = [
+					'message'    => 'Invoice updated successfully.',
+					'alert-type' => 'success',
+				];
+				return redirect()->route('print.invoice', ['id' => $invoice->id])->with($notification);
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+			} catch (\Exception $e) {
+				DB::rollBack();
+				return response()->json(['error' => $e->getMessage()], 500);
+				}
 
     }
 
@@ -694,41 +694,36 @@ class InvoiceController extends Controller {
             ]);
 
             foreach ($request->product_id as $key => $productId) {
-                $quantity = $request->quantity[$key] ?? 0;
-                $type     = strtolower($request->type[$key] ?? '');
+					$quantity = $request->quantity[$key] ?? 0;
+					$type     = strtolower($request->type[$key] ?? '');
 
-                InvoiceDetail::create([
-                    'invoice_id'   => $invoice->id,
-                    'product_id'   => $productId,
-                    'product_code' => $request->product_code[$key],
-                    'product_name' => $request->product_name[$key],
-                    'type'         => $type,
-                    'quantity'     => $quantity,
-                    'price'        => $request->price[$key],
-                    'total'        => $request->total[$key],
-                ]);
+					InvoiceDetail::create([
+						'invoice_id'   => $invoice->id,
+						'product_id'   => $productId,
+						'product_code' => $request->product_code[$key],
+						'product_name' => $request->product_name[$key],
+						'type'         => $type,
+						'quantity'     => $quantity,
+						'price'        => $request->price[$key],
+						'total'        => $request->total[$key],
+					]);
 
-                if ($productId && $quantity > 0) {
-                    $product = Product::find($productId);
+					if ($productId && $quantity > 0) {
+						$product = Product::find($productId);
 
-                    if ($product) {
+						if ($product) {
 
-                        if ($type === 'sale') {
+							if ($type === 'sale') {
+								$product->decrement('quantity', $quantity);
+							} elseif ($type === 'return') {
+								$product->increment('quantity', $quantity);
+							}
 
-                            if ($product->quantity < $quantity) {
-                                throw new \Exception("Insufficient stock for product: {$product->name}");
-                            }
+						}
 
-                            $product->decrement('quantity', $quantity);
-                        } elseif ($type === 'return') {
-                            $product->increment('quantity', $quantity);
-                        }
+					}
 
-                    }
-
-                }
-
-            }
+				}
 
             $payment = Payment::where('invoice_id', $invoice->id)->first();
 
@@ -834,5 +829,44 @@ class InvoiceController extends Controller {
         }
 
     }
+	
+	public function SalesInvoiceReport(){
+		
+        return view('backend.invoice.sales_invoice_report');
+    } // End Method
+
+	
+	public function SalesReportPdf(Request $request){
+
+        $sdate = date('Y-m-d',strtotime($request->start_date));
+        $edate = date('Y-m-d',strtotime($request->end_date));
+       
+		$allData = Invoice::with('sale_returns')->whereBetween('date', [$sdate,$edate])->get();
+
+        $start_date = date('Y-m-d',strtotime($request->start_date));
+        $end_date = date('Y-m-d',strtotime($request->end_date));
+        return view('backend.pdf.sales_report_pdf',compact('allData','start_date','end_date'));
+    } // End Method	
+	
+	public function SalesProductReport(){
+		
+        return view('backend.invoice.sales_product_report');
+    } // End Method
+	
+	public function SalesProductPdf(Request $request){
+
+		$sdate = date('Y-m-d', strtotime($request->start_date));
+		$edate = date('Y-m-d', strtotime($request->end_date));
+	   
+		// Fetch data from invoice, sale_returns, and invoice_details tables
+		$allData = Invoice::with(['sale_returns', 'invoice_details'])
+							->whereBetween('date', [$sdate, $edate])
+							->get();
+
+		$start_date = date('Y-m-d', strtotime($request->start_date));
+		$end_date = date('Y-m-d', strtotime($request->end_date));
+		
+		return view('backend.pdf.sales_product_pdf', compact('allData', 'start_date', 'end_date'));
+	} // End Method
 
 }
