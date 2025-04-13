@@ -27,18 +27,19 @@ class PaymentController extends Controller
 
     public function addPayment(Request $request)
     {
+        $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'amount' => 'required|numeric|min:0.01',
+            'payment_date' => 'required|date',
+            'transaction_type' => 'required|string',
+            'invoice_id' => 'nullable|exists:invoices,id',
+            'flat_discount' => 'nullable|numeric|min:0',
+            'note' => 'nullable|string'
+        ]);
+
         DB::beginTransaction();
 
         try {
-            $request->validate([
-                'customer_id' => 'required|exists:customers,id',
-                'amount' => 'required|numeric|min:0.01',
-                'payment_date' => 'required|date',
-                'transaction_type' => 'required|string',
-                'invoice_id' => 'nullable|exists:invoices,id',
-                'flat_discount' => 'nullable|numeric|min:0',
-                'note' => 'nullable|string'
-            ]);
 
             $customer = Customer::findOrFail($request->customer_id);
             $amount = $request->amount - ($request->flat_discount ?? 0);
@@ -58,7 +59,7 @@ class PaymentController extends Controller
                 'payment_id' => $payment->id,
                 'paid_amount' => $amount,
                 'transaction_type' => $request->transaction_type,
-                'payment_date' => $request->payment_date
+                // 'payment_date' => $request->payment_date
             ]);
 
             // Update customer's due amount

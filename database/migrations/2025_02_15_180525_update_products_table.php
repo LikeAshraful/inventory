@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateProductsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('payments', function (Blueprint $table) {
             // Make supplier_id and unit_id nullable
             $table->integer('supplier_id')->nullable()->change();
             $table->integer('unit_id')->nullable()->change();
@@ -39,4 +41,4 @@ class UpdateProductsTable extends Migration
             $table->string('wholesale')->nullable()->change();
         });
     }
-}
+};
