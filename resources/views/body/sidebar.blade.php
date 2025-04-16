@@ -45,15 +45,15 @@
 
                         <ul id="side-menu">
 
-                            
-                
+
+
                             <li>
-                                <a href="{{url('/dashboard')}}">
+                                <a href="{{ url('/dashboard') }}">
                                     <i class="mdi mdi-view-dashboard-outline"></i>
                                     <span> Dashboards </span>
                                 </a>
                             </li>
-							
+
                             <li>
                                 <a href="#supplier" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">local_shipping</i>
@@ -68,17 +68,17 @@
                                         <li>
                                             <a href="{{ route('supplier.all') }}">Supplier Details</a>
                                         </li>
-										<li>
+                                        <li>
                                             <a href="{{ route('supplier.invoice.report') }}">Supplier Invoice Report</a>
                                         </li>
-										<li>
+                                        <li>
                                             <a href="{{ route('supplier.product.report') }}">Supplier Product Report</a>
                                         </li>
                                     </ul>
                                 </div>
                             </li>
-							
-							<li>
+
+                            <li>
                                 <a href="#customer" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">groups</i>
                                     <span> Customer </span>
@@ -92,18 +92,18 @@
                                         <li>
                                             <a href="{{ route('customer.all') }}">Customer Details</a>
                                         </li>
-										<li>
+                                        <li>
                                             <a href="{{ route('customer.invoice.report') }}">Customer Invoice Report</a>
                                         </li>
-										<li>
+                                        <li>
                                             <a href="{{ route('customer.product.report') }}">Customer Product Report</a>
                                         </li>
-										
+
                                     </ul>
                                 </div>
                             </li>
-							
-							<li>
+
+                            <li>
                                 <a href="#units" data-bs-toggle="collapse">
                                     <i class="mdi mdi-cart-outline"></i>
                                     <span> Units </span>
@@ -120,8 +120,8 @@
                                     </ul>
                                 </div>
                             </li>
-							
-							<li>
+
+                            <li>
                                 <a href="#category" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">category</i>
                                     <span> Category </span>
@@ -138,8 +138,8 @@
                                     </ul>
                                 </div>
                             </li>
-							
-							<li>
+
+                            <li>
                                 <a href="#product" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">view_in_ar</i>
                                     <span> Product </span>
@@ -153,14 +153,14 @@
                                         <li>
                                             <a href="{{ route('product.all') }}">Product Details</a>
                                         </li>
-										<li>
-											<a href="{{ route('import.product') }}">Import Product </a>
-										</li>
+                                        <li>
+                                            <a href="{{ route('import.product') }}">Import Product </a>
+                                        </li>
                                     </ul>
                                 </div>
                             </li>
-							
-							<li>
+
+                            <li>
                                 <a href="#stock" data-bs-toggle="collapse">
                                     <i class="mdi mdi-cart-outline"></i>
                                     <span>Stock</span>
@@ -169,13 +169,13 @@
                                 <div class="collapse" id="stock">
                                     <ul class="nav-second-level">
                                         <li><a href="{{ route('stock.report') }}">Stock Report</a></li>
-										<li><a href="{{ route('stock.category.wise') }}">Category Wise Report</a></li>
-										<li><a href="{{ route('damage.add') }}">Add Damage / Lost</a></li>
+                                        <li><a href="{{ route('stock.category.wise') }}">Category Wise Report</a></li>
+                                        <li><a href="{{ route('damage.add') }}">Add Damage / Lost</a></li>
                                     </ul>
                                 </div>
                             </li>
-							
-							<li>
+
+                            <li>
                                 <a href="#purchase" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">hourglass_bottom</i>
                                     <span> Purchase </span>
@@ -186,23 +186,25 @@
                                         <li>
                                             <a href="{{ route('purchase.add') }}">Purchase Entry</a>
                                         </li>
-										
+
                                         <li>
                                             <a href="{{ route('purchase.all') }}">Purchase Details</a>
                                         </li>
-										
-										<li>
-                                            <a href="{{ route('purchase.invoice.report') }}">Purchase Invoice Report</a>
+
+                                        <li>
+                                            <a href="{{ route('purchase.invoice.report') }}">Purchase Invoice
+                                                Report</a>
                                         </li>
-										
-										<li>
-                                            <a href="{{ route('purchase.product.report') }}">Purchase Product Report</a>
+
+                                        <li>
+                                            <a href="{{ route('purchase.product.report') }}">Purchase Product
+                                                Report</a>
                                         </li>
                                     </ul>
                                 </div>
                             </li>
-							
-							<li>
+
+                            <li>
                                 <a href="#sale" data-bs-toggle="collapse">
                                     <i class="mdi mdi-cart-outline"></i>
                                     <span> Sales </span>
@@ -213,27 +215,27 @@
                                         <li>
                                             <a href="{{ route('retailsale.add') }}">Retail Sale</a>
                                         </li>
-										
+
                                         <li>
                                             <a href="{{ route('wholesale.add') }}">Wholesale</a>
                                         </li>
-										
-										<li>
+
+                                        <li>
                                             <a href="{{ route('invoice.all') }}">Sales Details</a>
                                         </li>
-										
-										<li>
+
+                                        <li>
                                             <a href="{{ route('sales.invoice.report') }}">Sales Invoice Report</a>
                                         </li>
-										
-										<li>
+
+                                        <li>
                                             <a href="{{ route('sales.product.report') }}">Sales Product Report</a>
                                         </li>
                                     </ul>
                                 </div>
                             </li>
-							
-							<li>
+
+                            <li>
                                 <a href="#employee" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">group</i>
                                     <span> Employee </span>
@@ -249,8 +251,8 @@
                                         </li>
                                     </ul>
                                 </div>
-                            </li>	
-							<li>
+                            </li>
+                            <li>
                                 <a href="#payment" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">group</i>
                                     <span> Payment </span>
@@ -261,7 +263,10 @@
                                         <li>
                                             <a href="{{ route('customer.payment') }}">Customer Payment</a>
                                         </li>
-                                        
+                                        <li>
+                                            <a href="{{ route('supplier.payment') }}">Supplier Payment</a>
+                                        </li>
+
                                     </ul>
                                 </div>
                             </li>
@@ -317,9 +322,9 @@
                                 </div>
                             </li>
 
-                            
 
-                            
+
+
                             <li class="menu-title mt-2">Custom</li>
 
                             <li>

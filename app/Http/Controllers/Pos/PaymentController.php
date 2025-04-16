@@ -10,12 +10,13 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\PaymentDetail;
+use App\Models\Supplier;
 use Auth;
 use DB;
 
 class PaymentController extends Controller
 {
-    public function showPaymentPage()
+    public function customerPayment()
     {
         $customers = Customer::where('status', 1)
             ->where('previous_due_amount', '>', 0)
@@ -25,7 +26,7 @@ class PaymentController extends Controller
         return view('backend.payment.customer_payment_add', compact('customers'));
     }
 
-    public function addPayment(Request $request)
+    public function storeCustomerPayment(Request $request)
     {
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
@@ -109,5 +110,69 @@ class PaymentController extends Controller
             'mobile_no' => $customer->mobile_no,
             'address' => $customer->address
         ]);
+    }
+
+    public function supplierPayment()
+    {
+        $suppliers = Supplier::where('status', 1)
+            ->where('balance', '>', 0)
+            ->orderBy('shopname')
+            ->get(['id', 'shopname', 'balance']);
+
+        return view('backend.payment.supplier_payment_add', compact('suppliers'));
+    }
+
+    public function storeSupplierPayment(Request $request)
+    {
+        $request->validate([
+            'supplier_id' => 'required|exists:suppliers,id',
+            'amount' => 'required|numeric|min:0.01',
+            'payment_date' => 'required|date',
+            'transaction_type' => 'required|string',
+            'note' => 'nullable|string'
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+
+            $supplier = Supplier::findOrFail($request->supplier_id);
+            $amount = $request->amount;
+
+            // Create payment record
+            $payment = Payment::create([
+                'supplier_id' => $supplier->id,
+                'paid_amount' => $amount,
+                'payment_date' => $request->payment_date,
+                'created_by' => Auth::id(),
+                'note' => $request->note
+            ]);
+
+            // Create payment detail
+            PaymentDetail::create([
+                'payment_id' => $payment->id,
+                'paid_amount' => $amount,
+                'transaction_type' => $request->transaction_type,
+                // 'payment_date' => $request->payment_date
+            ]);
+
+            // Update supplier's balance
+            $supplier->decrement('balance', $amount);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment recorded successfully',
+                'supplier_balance' => $supplier->fresh()->balance,
+                'supplier_id' => $supplier->id
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment failed: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
