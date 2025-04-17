@@ -6,13 +6,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
-class Payment extends Model
+class SupplierPayment extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'invoice_id',
-        'customer_id',
+        'purchase_id',
+        'supplier_id',
         'paid_amount',
         'due_amount',
         'previous_due_amount',
@@ -24,6 +25,17 @@ class Payment extends Model
 
     protected $guarded = [];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (Auth::check()) {
+                $model->created_by = Auth::id();
+            }
+        });
+    }
+
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'customer_id', 'id');
@@ -34,8 +46,13 @@ class Payment extends Model
         return $this->belongsTo(Invoice::class, 'invoice_id', 'id');
     }
 
-    public function payment_details()
+    public function customerPayment_details()
     {
-        return $this->hasMany(PaymentDetail::class, 'payment_id');
+        return $this->hasMany(CustomerPaymentDetail::class, 'customer_payment_id');
+    }
+
+    public function createBy()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
     }
 }

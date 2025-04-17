@@ -150,13 +150,13 @@
                                 // Update customer due amount in dropdown
                                 var option = $('#supplier_id option[value="' +
                                     supplierId + '"]');
-                                option.data('due', response.customer_due);
+                                option.data('due', response.supplier_balance);
                                 option.text(option.text().replace(/Due: [\d.]+/,
                                     'Due: ' + response
-                                    .customer_due));
+                                    .supplier_balance));
 
                                 // Update current due amount
-                                $('#current_due_amount').val(response.customer_due);
+                                $('#current_due_amount').val(response.supplier_balance);
 
                                 // Reset form
                                 $('#payment_amount, #discount_amount').val('');
