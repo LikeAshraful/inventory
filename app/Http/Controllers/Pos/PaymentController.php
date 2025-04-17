@@ -7,11 +7,12 @@ namespace App\Http\Controllers\Pos;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use App\Models\CustomerPayment;
+use App\Models\CustomerPaymentDetail;
 use App\Models\Invoice;
-use App\Models\Payment;
-use App\Models\PaymentDetail;
 use App\Models\Supplier;
-use Auth;
+use App\Models\SupplierPayment;
+use App\Models\SupplierPaymentDetail;
 use DB;
 
 class PaymentController extends Controller
@@ -46,21 +47,19 @@ class PaymentController extends Controller
             $amount = $request->amount - ($request->flat_discount ?? 0);
 
             // Create payment record
-            $payment = Payment::create([
+            $payment = CustomerPayment::create([
                 'customer_id' => $customer->id,
                 'paid_amount' => $amount,
                 'payment_date' => $request->payment_date,
                 'discount' => $request->flat_discount ?? 0,
-                'created_by' => Auth::id(),
                 'note' => $request->note
             ]);
 
             // Create payment detail
-            PaymentDetail::create([
-                'payment_id' => $payment->id,
+            CustomerPaymentDetail::create([
+                'customer_payment_id' => $payment->id,
                 'paid_amount' => $amount,
                 'transaction_type' => $request->transaction_type,
-                // 'payment_date' => $request->payment_date
             ]);
 
             // Update customer's due amount
@@ -140,20 +139,18 @@ class PaymentController extends Controller
             $amount = $request->amount;
 
             // Create payment record
-            $payment = Payment::create([
+            $payment = SupplierPayment::create([
                 'supplier_id' => $supplier->id,
                 'paid_amount' => $amount,
                 'payment_date' => $request->payment_date,
-                'created_by' => Auth::id(),
                 'note' => $request->note
             ]);
 
             // Create payment detail
-            PaymentDetail::create([
-                'payment_id' => $payment->id,
+            SupplierPaymentDetail::create([
+                'supplier_payment_id' => $payment->id,
                 'paid_amount' => $amount,
                 'transaction_type' => $request->transaction_type,
-                // 'payment_date' => $request->payment_date
             ]);
 
             // Update supplier's balance
