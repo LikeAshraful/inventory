@@ -111,11 +111,13 @@
             // Initialize Select2
             $('.select2').select2({
                 width: '100%',
-                placeholder: $(this).data('placeholder')
+                placeholder: $(this).data('placeholder'),
+                allowClear: true,
+                closeOnSelect: true
             });
 
             // When customer is selected
-            $('#customer_id').change(function() {
+            $('#customer_id').on('select2:select', function(e) {
                 var selectedOption = $(this).find('option:selected');
                 var customerId = $(this).val();
 
