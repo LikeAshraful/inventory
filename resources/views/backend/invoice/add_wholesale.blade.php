@@ -252,7 +252,7 @@ $('#customer_id').change(function () {
                         alert(response.error);
                         $('#previous_due_amount').val(0); // Default to 0 in case of error
                     } else {
-                        $('#previous_due_amount').val(response.previous_due_amount || 0); // Display due amount
+                        $('#previous_due_amount').val(response.due_amount || 0); // Display due amount
                     }
                 },
                 error: function () {
@@ -340,7 +340,7 @@ $('#customer_id').change(function () {
 			}
 		});
 
-		// Convert returnAmount to positive if it’s negative
+		// Convert returnAmount to positive if itï¿½s negative
 		returnAmount = Math.abs(returnAmount);
 
 		var percentageDiscount = parseFloat($('#percentage_discount').val()) || 0;
