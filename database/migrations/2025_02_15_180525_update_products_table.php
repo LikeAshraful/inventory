@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('payments', function (Blueprint $table) {
+        Schema::table('products', function (Blueprint $table) {
             // Make supplier_id and unit_id nullable
             $table->integer('supplier_id')->nullable()->change();
             $table->integer('unit_id')->nullable()->change();
