@@ -36,9 +36,9 @@ class SupplierPayment extends Model
         });
     }
 
-    public function customer()
+    public function supplier()
     {
-        return $this->belongsTo(Customer::class, 'customer_id', 'id');
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
     }
 
     public function invoice()
