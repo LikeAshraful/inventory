@@ -22,8 +22,8 @@
                                     </div>
 
                                     <div class="text-center">
-                                        <h2 class="mb-1">Al-faruk sleeping bag</h2>
-                                        <h3>Sales Invoice</h3>
+                                        <h3 class="mb-1">Al-Faruk Sleeping Bag</h3>
+                                        <h4>Sales Invoice</h4>
                                     </div>
 
                                     <div></div>
@@ -31,7 +31,7 @@
                             </div>
 
                             <div class="row" style="padding: 0 20px;">
-                                <hr style="border: 1px solid #000;">
+                                <hr style="border: 1px solid #000; margin-bottom: 8px;">
                                 <div class="col-md-12"></div>
                             </div>
 
@@ -53,45 +53,45 @@
 
                             </div> 
                             <!-- end row -->
-
-                            <div class="row"style="padding-left: 20px;padding-right: 20px;">
+                            <div class="row" style="padding-left: 20px;padding-right: 20px;">
                                 <div class="col-12">
                                     <div class="table-responsive">
                                         <table class="table mt-3 mb-3">
                                             <thead style="background-color:#000;color:#fff">
-                                            <tr>
-                                                <th>SN</th>
-                                                <th style="width: 10%">Type</th>
-                                                <th>Description</th>
-                                                <th style="width: 10%">Qty</th>
-                                                <th style="width: 10%">Price</th>
-                                                <th style="width: 10%" class="text-end">Total</th>
-                                            </tr>
+                                                <tr>
+                                                    <th style="padding: 0.4rem;">SN</th>
+                                                    <th style="width: 10%; padding: 0.4rem;">Type</th>
+                                                    <th style="padding: 0.4rem;">Description</th>
+                                                    <th style="width: 10%; padding: 0.4rem;">Qty</th>
+                                                    <th style="width: 10%; padding: 0.4rem;">Price</th>
+                                                    <th style="width: 10%; padding: 0.4rem;" class="text-end">Total</th>
+                                                </tr>
                                             </thead>
                                             <tbody>
-                                            @foreach($invoice['invoice_details'] as $key => $details)
-                                            <tr>
-                                                <td>{{ $key+1 }}</td>
-                                                <td>{{ $details->type }}</td>
-                                                <td>{{ $details->product_name }}</td>
-                                                <td>{{ $details->quantity }}</td>
-                                                <td>{{ $details->price }}</td>
-                                                <td class="text-center">{{ $details->total }}</td>
-                                            </tr>
+                                                @foreach($invoice['invoice_details'] as $key => $details)
+                                                <tr>
+                                                    <td style="padding: 0.4rem;">{{ $key+1 }}</td>
+                                                    <td style="padding: 0.4rem;">{{ $details->type }}</td>
+                                                    <td style="padding: 0.4rem;">{{ $details->product_name }}</td>
+                                                    <td style="padding: 0.4rem;">{{ $details->quantity }}</td>
+                                                    <td style="padding: 0.4rem;">{{ $details->price }}</td>
+                                                    <td style="padding: 0.4rem;" class="text-center">{{ $details->total }}</td>
+                                                </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>
                                     </div> <!-- end table-responsive -->
                                 </div> <!-- end col -->
                             </div>
+                            
                             <!-- end row -->
 
                             <div class="row" style="padding: 0 20px;">
                                 <div class="col-sm-4">
                                     <div>
-                                        <p class="mb-2"><b>Due In This Bill:</b> <span class="float-end">{{ $payment->due_amount }}</span></p>
-                                        <p class="mb-2"><b>Previous Dues:</b> <span class="float-end">{{ $payment->previous_due_amount }}</span></p>
-                                        <p class="mb-2"><b>Balance:</b> <span class="float-end">{{ $payment['customer']['previous_due_amount'] }}</span></p>
+                                        <p class="mb-0"><b>Due In This Bill:</b> <span class="float-end">{{ $payment->due_amount }}</span></p>
+                                        <p class="mb-0"><b>Previous Dues:</b> <span class="float-end">{{ $payment->previous_due_amount }}</span></p>
+                                        <p class="mb-0"><b>Balance:</b> <span class="float-end">{{ $payment['customer']['previous_due_amount'] }}</span></p>
                                     </div>
                                 </div>
                                 
@@ -109,12 +109,12 @@
                                 
                                 <div class="col-sm-4">
                                     <div class="float-end">
-                                        <p><b>Total:</b> <span class="float-end">{{ $invoice->total_amount }}</span></p>
-                                        <p><b>Discount:</b> <span class="float-end"> &nbsp;&nbsp;&nbsp; {{ $details->discount }}</span></p>
-                                        <p><b>Shipping:</b> <span class="float-end"> &nbsp;&nbsp;&nbsp; {{ $invoice->shipping }}</span></p>
-                                        <p><b>Labour:</b> <span class="float-end"> &nbsp;&nbsp;&nbsp; {{ $invoice->labour }}</span></p>
-                                        <p><b>Payable:</b> <span class="float-end"> &nbsp;&nbsp;&nbsp; {{ $invoice->payable_amount }}</span></p>
-                                        <p><b>Paid:</b> <span class="float-end"> &nbsp;&nbsp;&nbsp; {{ $payment->paid_amount }}</span></p>
+                                        <p class="mb-1"><b>Total:</b> <span class="float-end">{{ $invoice->total_amount }}</span></p>
+                                        <p class="mb-1"><b>Discount:</b> <span class="float-end"> &nbsp;&nbsp;&nbsp; {{ $details->discount }}</span></p>
+                                        <p class="mb-1"><b>Shipping:</b> <span class="float-end"> &nbsp;&nbsp;&nbsp; {{ $invoice->shipping }}</span></p>
+                                        <p class="mb-1"><b>Labour:</b> <span class="float-end"> &nbsp;&nbsp;&nbsp; {{ $invoice->labour }}</span></p>
+                                        <p class="mb-1"><b>Payable:</b> <span class="float-end"> &nbsp;&nbsp;&nbsp; {{ $invoice->payable_amount }}</span></p>
+                                        <p class="mb-1"><b>Paid:</b> <span class="float-end"> &nbsp;&nbsp;&nbsp; {{ $payment->paid_amount }}</span></p>
                                         
                                     </div>
                                     <div class="clearfix"></div>
@@ -122,7 +122,7 @@
                             </div>
                             <!-- end row -->
                             
-                            <div class="row mt-3"style="padding-left: 20px;padding-right: 20px;">
+                            <div class="row mt-1"style="padding-left: 20px;padding-right: 20px;">
                                 <div class="col-sm-3">
                                     <div class="clearfix ">
                                         <hr style="border: 1px solid #000; ">  
