@@ -232,4 +232,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/supplier/payment', 'supplierPayment')->name('supplier.payment');
         Route::post('/supplier/payment/store', 'storeSupplierPayment')->name('supplier.payment.store');
     });
+
+    Route::get('lang/{lang}', function ($lang) {
+        if (in_array($lang, ['en', 'bn'])) {
+            session(['locale' => $lang]);
+        }
+        return redirect()->back();
+    })->name('lang.switch');
 }); // End User Middleware

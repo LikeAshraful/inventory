@@ -50,29 +50,29 @@
                             <li>
                                 <a href="{{ url('/dashboard') }}">
                                     <i class="mdi mdi-view-dashboard-outline"></i>
-                                    <span> Dashboards </span>
+                                    <span> @lang('dashboard') </span>
                                 </a>
                             </li>
 
                             <li>
                                 <a href="#supplier" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">local_shipping</i>
-                                    <span> Supplier </span>
+                                    <span> @lang('supplier') </span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="supplier">
                                     <ul class="nav-second-level">
                                         <li>
-                                            <a href="{{ route('supplier.add') }}">Supplier Entry</a>
+                                            <a href="{{ route('supplier.add') }}">@lang('supplier_entry')</a>
                                         </li>
                                         <li>
-                                            <a href="{{ route('supplier.all') }}">Supplier Details</a>
+                                            <a href="{{ route('supplier.all') }}">@lang('supplier_details')</a>
                                         </li>
                                         <li>
-                                            <a href="{{ route('supplier.invoice.report') }}">Supplier Invoice Report</a>
+                                            <a href="{{ route('supplier.invoice.report') }}">@lang('supplier_invoice_report')</a>
                                         </li>
                                         <li>
-                                            <a href="{{ route('supplier.product.report') }}">Supplier Product Report</a>
+                                            <a href="{{ route('supplier.product.report') }}">@lang('supplier_product_report')</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -81,7 +81,7 @@
                             <li>
                                 <a href="#customer" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">groups</i>
-                                    <span> Customer </span>
+                                    <span> @lang('customer') </span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="customer">
@@ -106,7 +106,7 @@
                             <li>
                                 <a href="#units" data-bs-toggle="collapse">
                                     <i class="mdi mdi-cart-outline"></i>
-                                    <span> Units </span>
+                                    <span> @lang('units') </span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="units">
@@ -124,7 +124,7 @@
                             <li>
                                 <a href="#category" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">category</i>
-                                    <span> Category </span>
+                                    <span> @lang('category') </span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="category">
@@ -142,7 +142,7 @@
                             <li>
                                 <a href="#product" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">view_in_ar</i>
-                                    <span> Product </span>
+                                    <span> @lang('product') </span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="product">
@@ -163,7 +163,7 @@
                             <li>
                                 <a href="#stock" data-bs-toggle="collapse">
                                     <i class="mdi mdi-cart-outline"></i>
-                                    <span>Stock</span>
+                                    <span>@lang('stock')</span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="stock">
@@ -178,7 +178,7 @@
                             <li>
                                 <a href="#purchase" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">hourglass_bottom</i>
-                                    <span> Purchase </span>
+                                    <span> @lang('purchase') </span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="purchase">
@@ -207,7 +207,7 @@
                             <li>
                                 <a href="#sale" data-bs-toggle="collapse">
                                     <i class="mdi mdi-cart-outline"></i>
-                                    <span> Sales </span>
+                                    <span> @lang('sales') </span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="sale">
@@ -238,7 +238,7 @@
                             <li>
                                 <a href="#employee" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">group</i>
-                                    <span> Employee </span>
+                                    <span> @lang('employee') </span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="employee">
@@ -255,7 +255,7 @@
                             <li>
                                 <a href="#payment" data-bs-toggle="collapse">
                                     <i class="material-symbols-outlined">group</i>
-                                    <span> Payment </span>
+                                    <span> @lang('payment') </span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="payment">
@@ -274,7 +274,7 @@
                             <li>
                                 <a href="#sidebarCrm" data-bs-toggle="collapse">
                                     <i class="mdi mdi-account-multiple-outline"></i>
-                                    <span> CRM </span>
+                                    <span> @lang('crm') </span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="sidebarCrm">
@@ -301,7 +301,7 @@
                             <li>
                                 <a href="#sidebarEmail" data-bs-toggle="collapse">
                                     <i class="mdi mdi-email-multiple-outline"></i>
-                                    <span> Email </span>
+                                    <span> @lang('email') </span>
                                     <span class="menu-arrow"></span>
                                 </a>
                                 <div class="collapse" id="sidebarEmail">
